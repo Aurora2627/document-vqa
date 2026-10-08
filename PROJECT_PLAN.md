@@ -1,6 +1,6 @@
 # 基于 LLaVA 的文档视觉问答与证据定位
 
-状态：方案完成，模型推理、数据实验、微调与 Mac 兼容性尚未验证。此项目作为第二个多模态项目，沿用 document-vqa 仓库；不增加第三个多模态简历项目。
+状态：v0.2.0 已完成初始模型实现与本机 MPS 兼容性测试；正式 DocVQA 实验、证据定位和云端 7B 微调尚未完成。此项目作为第二个多模态项目，沿用 document-vqa 仓库；不增加第三个多模态简历项目。
 
 ## 问题与输出
 
@@ -10,7 +10,7 @@
 
 ## 模型原理与候选
 
-LLaVA 连接视觉编码器、投影模块和自回归语言模型：图片的视觉 patch 特征映射到语言模型可消费的表示，再和问题一起输入语言模型生成答案。项目拟用 Hugging Face Transformers/PyTorch 的 LLaVA-NeXT 接口；候选 llava-hf/llava-v1.6-mistral-7b-hf，最终模型版本/权重 revision 在硬件和小样本测试后固定。
+LLaVA 连接视觉编码器、投影模块和自回归语言模型：图片的视觉 patch 特征映射到语言模型可消费的表示，再和问题一起输入语言模型生成答案。项目使用 Hugging Face Transformers/PyTorch。当前本机使用官方 LLaVA-OneVision-0.5B，固定 revision 74dd0bf867a4cda7950c17663794267c60cf4b40；LLaVA-NeXT 的 llava-hf/llava-v1.6-mistral-7b-hf 作为云端扩展候选。
 
 LLaVA-1.5 可用于原理复现与分辨率对照；LLaVA-NeXT 的高分辨率处理适合研究文档小字。它们是研究基座，选用本身不构成原创方法或最新模型优势。
 
@@ -35,7 +35,7 @@ LLaVA-1.5 可用于原理复现与分辨率对照；LLaVA-NeXT 的高分辨率�
 
 现有 MacBook 16GB 和系统 Python 3.9 可先用于数据整理、评测开发及可用的小规模检查。不能据已有分类头 MPS 成功推断 LLaVA 7B 能运行。
 
-7B 语言模型仅 FP16 权重约 14GB（参数量×2 字节的粗略估算），还需视觉编码器、KV cache、临时张量与系统内存，故不把本机完整半精度推理或训练作为默认方案。用户已说明可以租用云端服务器、放宽算力限制。正式 7B 推理及 LoRA 默认使用云端 NVIDIA GPU；显存需求由模型、分辨率、序列长度、batch、精度和优化设置实测。
+7B 语言模型仅 FP16 权重约 14GB（参数量×2 字节的粗略估算），还需视觉编码器、KV cache、临时张量与系统内存，故不把本机完整半精度推理或训练作为默认方案。用户尚未租用云端服务器。本机已验证 OneVision 小模型的实际推理和 LoRA 流程。正式 7B 推理及 LoRA 默认使用云端 NVIDIA GPU；显存需求由模型、分辨率、序列长度、batch、精度和优化设置实测。
 
 最新 bitsandbytes 文档要求 Python >=3.10，当前本机 Python 3.9 不满足这一要求；量化后端和 Transformers/PEFT 的兼容性也需单独验证。不得静默替换用户的系统 Python，不得把 MLX/llama.cpp 运行报告成 PyTorch。远程训练环境单独记录解释器及依赖，不改变当前本地项目环境。云端可通过 VS Code Remote SSH 调试和启动训练，Python/依赖以选定模型的兼容要求固定。先试跑单批次前向/反向、保存峰值显存，再确定分辨率、batch 和 GPU；服务器供应商、GPU 型号、预算尚未确定，尚未租赁或启动付费资源。
 
@@ -43,7 +43,7 @@ LLaVA-1.5 可用于原理复现与分辨率对照；LLaVA-NeXT 的高分辨率�
 
 视觉 token 与多模态对齐；自回归生成；chat template/processor；数据构建；SFT、LoRA、标签遮蔽；分辨率与裁剪；OCR 辅助及证据定位；幻觉分析；ANLS 与系统评测；显存与推理成本；可复现实验。
 
-只有实际完成的部分才进入简历。当前仅完成项目设计，不能声称已完成微调、定位或模型部署。
+只有实际完成的部分才进入简历。当前已完成本机小模型软件验证，不能声称已完成正式 DocVQA 微调效果、证据定位或部署。
 
 ## 官方资料（2026-10-08 核验）
 
@@ -53,3 +53,7 @@ LLaVA-1.5 可用于原理复现与分辨率对照；LLaVA-NeXT 的高分辨率�
 - 候选模型：https://huggingface.co/llava-hf/llava-v1.6-mistral-7b-hf
 - 官方 DocVQA：https://www.docvqa.org/datasets/docvqa
 - bitsandbytes 要求：https://huggingface.co/docs/bitsandbytes/main/en/installation
+
+## 本机验证记录
+
+见 reports/local-validation-v0.2.0.md。单步损失下降与合成样例答对只说明运行流程，不是正式数据的能力提升。所有失败测试及修正后的新目录都保留。

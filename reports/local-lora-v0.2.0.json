@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "scope": "single LoRA step on synthetic fixture; hardware/training compatibility only; no QA quality claim",
+  "device": "mps",
+  "input_tokens": 1351,
+  "answer_tokens": 7,
+  "loss_before_step": 0.04253794625401497,
+  "loss_after_step": 0.03534815087914467,
+  "adapter_gradient_l1": 93.0536924302578,
+  "trainable_parameters": 270336,
+  "elapsed_seconds": 5.2642025409999995,
+  "mps_current_allocated_bytes": 1836235008,
+  "mps_driver_allocated_bytes": 8656650240,
+  "reload_same_model_exact": true
+}

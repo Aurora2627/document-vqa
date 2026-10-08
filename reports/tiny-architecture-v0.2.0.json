@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "scope": "random tiny HF LLaVA architecture only; synthetic tensor batch; no document QA accuracy",
+  "device": "mps",
+  "steps": 4,
+  "trainable_parameters": 3008,
+  "targets": [
+    "model.language_model.layers.0.self_attn.q_proj",
+    "model.language_model.layers.0.self_attn.v_proj",
+    "model.language_model.layers.1.self_attn.q_proj",
+    "model.language_model.layers.1.self_attn.v_proj"
+  ],
+  "frozen_vision_exact": true,
+  "reload_exact": true,
+  "losses": [
+    4.305783271789551,
+    4.233730792999268,
+    4.188692092895508,
+    4.159796714782715
+  ]
+}

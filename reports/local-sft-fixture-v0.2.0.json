@@ -1,0 +1,6 @@
+{
+  "best_validation_nll": 0.041108597069978714,
+  "train_size": 1,
+  "val_size": 1,
+  "selection": "validation NLL; QA quality not yet measured"
+}

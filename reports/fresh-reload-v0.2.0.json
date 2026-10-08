@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "device": "mps",
+  "scope": "fresh model checkpoint reload, synthetic fixture only",
+  "loss": 0.03534815087914467,
+  "previous_loss": 0.03534815087914467,
+  "absolute_difference": 0.0
+}

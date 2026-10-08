@@ -1,10 +1,12 @@
 {
   "project": "mm02-document-vqa",
-  "status": "design-complete-not-executed",
+  "status": "implemented-local-fixture-validated-real-docvqa-pending",
   "seed": 42,
-  "local_device": "auto",
-  "model_backend": "pytorch-transformers-llava-next-candidate",
-  "remote_training": "cloud-nvidia-gpu-planned-hardware-budget-pending",
+  "local_device": "mps",
+  "model_backend": "pytorch-transformers-llava-onevision",
+  "remote_training": "optional-7b-cloud-expansion-not-started",
   "data_root": "data",
-  "run_root": "runs"
+  "run_root": "runs",
+  "local_model": "llava-hf/llava-onevision-qwen2-0.5b-ov-hf",
+  "revision": "74dd0bf867a4cda7950c17663794267c60cf4b40"
 }

@@ -1,0 +1,8 @@
+# Cloud Python 3.11; install PyTorch with the wheel matching the server CUDA runtime.
+torch==2.8.0
+torchvision==0.23.0
+transformers==4.57.6
+Pillow==11.3.0
+numpy==2.0.2
+sentencepiece==0.2.1
+safetensors==0.6.2

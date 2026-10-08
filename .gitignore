@@ -22,3 +22,7 @@ reports/*prediction*.json
 reports/*check*.json
 reports/*confirmation*.json
 reports/provenance-matches.jsonl
+
+# Generated synthetic fixtures are rebuilt from saved Python source.
+data/sample/*.png
+data/sample/*.jsonl

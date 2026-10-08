@@ -1,42 +1,36 @@
-# 基于 LLaVA 的文档视觉问答与证据定位
+# LLaVA 文档视觉问答与轻量微调
 
-状态：LLaVA 方案与目录初始化完成，模型实现/正式实验尚未开始。详细设计见 [项目方案](PROJECT_PLAN.md)。
+状态：v0.2.0 已实现推理、PyTorch LoRA、答案监督、验证集选择及评测入口，并在 MacBook MPS 上通过小模型运行验证。正式 DocVQA 数据实验尚未开始；定位与 OCR 辅助属于后续扩展。
 
-方向：多模态/CV
+## 当前任务
 
-对应需求：滴滴 Voyager VLM、文档解析、数据与评测 JD
+输入单页文档图片和问题，生成简短答案。围绕 LLaVA 的视觉编码器、投影模块、语言模型、图像 token、指令格式与微调设计可复现实验。先做模型结构复现和运行验证，再使用正式数据比较零样本/LoRA、分辨率与裁剪策略。
 
-## 任务
+## 模型与设备
 
-输入单页文档或图表与问题，给出短答案和支持它的页码或区域证据。
+- 本机起点：官方 `llava-hf/llava-onevision-qwen2-0.5b-ov-hf`，revision `74dd0bf867a4cda7950c17663794267c60cf4b40`，权重 1,787,445,680 字节，下载后与官方 LFS SHA256 校验一致。0.5B 是语言基座规模，视觉编码器也占参数和内存。
+- 全部运行使用 `/usr/bin/python3`、Python 3.9、PyTorch 2.8、Transformers 4.57.6，从 VS Code 启动。MPS 上基座 Float16、LoRA Float32。
+- LLaVA-NeXT 7B 的代码接口已准备，真实推理/云端微调尚未验证；需要时再使用云端 GPU。不是所有 LLaVA 规模都能在 16GB Mac 上运行。
 
-## 实现阶段
+## 已验证的内容
 
-1. 单页数据和统一问答格式
-2. OCR+文本模型与 VLM 零样本基线
-3. 表格/图表/文字类型的分类别评测
-4. 分辨率及裁剪策略对比
-5. 外部 GPU LoRA SFT；可选扩展多页检索
+1. 官方 Transformers 微型随机 LLaVA：视觉 token 数匹配、投影和语言模型前向、反向、冻结视觉编码器、LoRA 与 projector 更新、精确重载。仅用于结构验证，不代表预训练性能。
+2. 官方预训练 OneVision 小模型：在合成发票软件样例上读取金额，生成耗时约 3.40 秒（不含模型加载与输入预处理），不能当作正式任务性能。
+3. 同一预训练模型：本机 MPS LoRA 单步更新，答案损失 0.04254→0.03535；270,336 可训练参数；通过新进程重新加载基座和 adapter 的损失一致性检查。
+4. 完整 train_lora.py 入口：在一条合成训练样本和一条独立合成验证样本上运行两轮，保存按验证 NLL 选择的 adapter。这里只证明训练流程可运行。
+5. 七项自动检查通过，覆盖答案标签遮蔽、LoRA 初始等价与冻结参数、图像 token 合约、答案后缀损失与完整因果损失一致、文档跨划分泄漏检查、ANLS。
 
-## 第一阶段起点
+完整说明：[本机验证报告](reports/local-validation-v0.2.0.md)。源码和每轮快照、配置、输入哈希、环境、日志、权重及预测保留。原始数据、合成 fixture、模型权重和本机配置不上传 GitHub，合成样例从保存的 Python 源码重建。
 
-先从 DocVQA 选可用的官方子集。没有原生区域标签时，只在人工标注的小评测集做定位评测，不伪造区域真值。图表数据作为后续扩展。
+## 代码入口
 
-## 实验与验收
+- `src/modeling.py`：官方模型加载、微型结构配置。
+- `src/lora.py`：直接使用 PyTorch 实现 LoRA；语言模型 q/v 线性层的低秩增量，默认冻结视觉与 projector。
+- `src/batching.py`：官方生成前缀＋答案＋EOS，仅监督答案 token，拒绝不匹配或静默截断。只生成答案位置需要的 vocabulary logits，减少无效内存。
+- `scripts/infer.py`：零样本/adapter 推理，整页或固定裁剪，记录耗时和 token 数。
+- `scripts/train_lora.py`：MPS/CUDA LoRA 训练、梯度累积、验证 NLL 选模型。CUDA 路径尚未实际运行。
+- `scripts/evaluate.py`：多参考答案 ANLS、规范化 Exact Match。
 
-- 答案准确率/ANLS（按数据集官方规范）
-- 证据区域 IoU 或人工证据正确性评估
-- 阅读/表格/图表分类别结果
-- 耗时、峰值内存；分辨率/裁剪/微调消融
+这个 LoRA checkpoint 是本项目的 `.pt` 格式，不是 PEFT 的 adapter 格式。
 
-## 运行环境
-
-数据准备、OCR、评测在 Mac；模型实现坚持 Python/PyTorch，所有运行从 VS Code 启动。用户可租用云端服务器；7B 推理及 LoRA 默认使用云端 NVIDIA GPU；16GB Mac 的模型推理、量化兼容性和速度尚未验证。当前系统 Python 3.9 不满足最新版 bitsandbytes 的 Python >=3.10 要求，远程环境单独配置。
-
-不预填效果提升数据；只有可复现的真实结果才进入简历。
-
-## 参考
-
-- https://huggingface.co/datasets/lmms-lab-encoder/DocVQA
-- https://github.com/LLaVA-VL/LLaVA-NeXT
-- https://huggingface.co/docs/transformers/model_doc/llava_next
+运行见 [VS Code 启动说明](VSCODE_START.md)，原理见 [模型与代码导读](MODEL_WALKTHROUGH.md)，后续研究设计见 [项目方案](PROJECT_PLAN.md)。
