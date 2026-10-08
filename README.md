@@ -1,6 +1,6 @@
-# 文档图表问答与证据定位
+# 基于 LLaVA 的文档视觉问答与证据定位
 
-状态：规划及目录初始化完成，模型实现/正式实验尚未开始。
+状态：LLaVA 方案与目录初始化完成，模型实现/正式实验尚未开始。详细设计见 [项目方案](PROJECT_PLAN.md)。
 
 方向：多模态/CV
 
@@ -31,12 +31,12 @@
 
 ## 运行环境
 
-数据准备、OCR、评测在 Mac；小型量化 VLM 通过 MLX 或远程 API 测试。完整 SFT 默认外部 GPU。Mac 训练兼容性与速度未验证。
+数据准备、OCR、评测在 Mac；模型实现坚持 Python/PyTorch，所有运行从 VS Code 启动。用户可租用云端服务器；7B 推理及 LoRA 默认使用云端 NVIDIA GPU；16GB Mac 的模型推理、量化兼容性和速度尚未验证。当前系统 Python 3.9 不满足最新版 bitsandbytes 的 Python >=3.10 要求，远程环境单独配置。
 
 不预填效果提升数据；只有可复现的真实结果才进入简历。
 
 ## 参考
 
 - https://huggingface.co/datasets/lmms-lab-encoder/DocVQA
-- https://github.com/QwenLM/Qwen3-VL
-- https://github.com/Blaizzy/mlx-vlm
+- https://github.com/LLaVA-VL/LLaVA-NeXT
+- https://huggingface.co/docs/transformers/model_doc/llava_next

@@ -1,10 +1,10 @@
 {
   "project": "mm02-document-vqa",
-  "status": "planned",
+  "status": "design-complete-not-executed",
   "seed": 42,
   "local_device": "auto",
-  "model_backend": "unconfigured",
-  "remote_training": "unconfigured",
+  "model_backend": "pytorch-transformers-llava-next-candidate",
+  "remote_training": "cloud-nvidia-gpu-planned-hardware-budget-pending",
   "data_root": "data",
   "run_root": "runs"
 }
