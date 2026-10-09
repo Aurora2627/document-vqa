@@ -10,6 +10,31 @@ from batching import build_example,answer_loss
 from evaluation import summarize,compare
 
 class CoreTests(unittest.TestCase):
+    def test_checkpointing_preserves_lora_gradients_with_frozen_embeddings(self):
+        import copy
+        model=tiny_llava();model.config.use_cache=False;configure_lora(model,2,4,0,False)
+        checkpointed=copy.deepcopy(model)
+        checkpointed.gradient_checkpointing_enable(gradient_checkpointing_kwargs={'use_reentrant':False})
+        model.train();checkpointed.train();batch=tiny_batch()
+        a=answer_loss(model,batch);b=answer_loss(checkpointed,batch)
+        torch.testing.assert_close(a,b,rtol=1e-5,atol=1e-6)
+        a.backward();b.backward()
+        for (name,p),(other,q) in zip(model.named_parameters(),checkpointed.named_parameters()):
+            if p.requires_grad:
+                self.assertIsNotNone(q.grad);self.assertTrue(torch.isfinite(q.grad).all())
+                torch.testing.assert_close(p.grad,q.grad,rtol=1e-4,atol=1e-6)
+        self.assertTrue(any(p.grad.abs().sum()>0 for p in checkpointed.parameters() if p.requires_grad))
+    def test_sft_candidate_selection_excludes_source_documents(self):
+        import sys
+        sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
+        from prepare_sft_data import select_documents
+        items=[{'row_idx':n,'truncated_cells':['ocr_results'],
+                'row':{'question_id':n,'other_metadata':{'ucsf_document_id':doc}}}
+               for n,doc in enumerate(['a','a','b','c'])]
+        chosen=select_documents(items,2,{'a'},2)
+        self.assertEqual({i['row']['other_metadata']['ucsf_document_id'] for i in chosen},{'b','c'})
+        self.assertEqual(chosen,select_documents(list(reversed(items)),2,{'a'},2))
+        with self.assertRaises(ValueError):select_documents(items,3,{'a'},2)
     def test_development_selection_keeps_one_question_per_source_document(self):
         import sys
         sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))

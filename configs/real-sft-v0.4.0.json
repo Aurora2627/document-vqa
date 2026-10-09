@@ -1,0 +1,18 @@
+{
+  "model": "llava-hf/llava-onevision-qwen2-0.5b-ov-hf",
+  "revision": "74dd0bf867a4cda7950c17663794267c60cf4b40",
+  "device": "mps",
+  "max_image_edge": 512,
+  "rank": 8,
+  "alpha": 16,
+  "dropout": 0.05,
+  "lr": 0.0001,
+  "epochs": 2,
+  "accumulation": 4,
+  "seed": 42,
+  "train_projector": false,
+  "gradient_checkpointing": true,
+  "selection": "lowest trained-epoch validation answer-token NLL; frozen baseline remains an independent comparator",
+  "evaluation": "one fixed reserved subset; same greedy generation and image preprocessing before/after",
+  "future_use": "after this evaluation is inspected it becomes development evidence; do not reuse as a pristine final test"
+}

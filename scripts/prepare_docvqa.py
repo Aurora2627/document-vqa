@@ -23,12 +23,15 @@ DATASET = 'lmms-lab-encoder/DocVQA'
 def fetch(url, destination):
     if urlparse(url).scheme != 'https':
         raise ValueError('HTTPS source required')
-    result = subprocess.run(['curl', '-fsSL', '--retry', '3', '--connect-timeout', '20',
-                    '--max-time', '180', url, '-o', str(destination)],
+    partial = destination.with_name(destination.name + '.partial')
+    result = subprocess.run(['curl', '-fsSL', '--retry', '4', '--retry-all-errors',
+                    '--retry-delay', '2', '--connect-timeout', '20',
+                    '--max-time', '180', url, '-o', str(partial)],
                    stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
     if result.returncode:
         # Do not include signed asset URLs in console errors.
         raise RuntimeError('Download failed for ' + destination.name + ': curl exit ' + str(result.returncode))
+    partial.replace(destination)
 
 def select_rows(payload, count):
     selected, documents = [], set()

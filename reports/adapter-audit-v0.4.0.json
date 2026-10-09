@@ -1,0 +1,28 @@
+{
+  "adapter_sha256": "1548fdb5ffb5cd60a7568173d7b5dda8495d2e4b2dbefdae8546fae3644333b2",
+  "trainable_parameters": 540672,
+  "b_matrices": 48,
+  "nonzero_b_matrices": 48,
+  "b_frobenius_norm": 0.3898368179798126,
+  "selected_epoch": 2,
+  "prediction_changes": {
+    "val": {
+      "questions": 12,
+      "raw_predictions_changed": 2,
+      "changed_question_ids": [
+        "4912",
+        "50763"
+      ]
+    },
+    "test": {
+      "questions": 20,
+      "raw_predictions_changed": 3,
+      "changed_question_ids": [
+        "60510",
+        "37659",
+        "50877"
+      ]
+    }
+  },
+  "interpretation": "Nonzero B proves optimizer updates; generation quality must still be evaluated separately"
+}

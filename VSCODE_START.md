@@ -39,3 +39,16 @@
 ```
 
 开发集来自 viewer 顺序页面，未锁定 viewer revision，保存的图片哈希及原始响应用于本轮审计。不是完整官方基准评测。
+
+## 真实数据 LoRA 对照（v0.4.0）
+
+本机已有 runs/docvqa-sft-data-v040c 中的 train/val/test 清单。这里的 test 是从带答案的官方 validation 镜像划出的本轮保留评测，不能称官方盲测。上轮 20 题开发集被排除。公开仓库不含数据，下载时配置自己的终端代理。
+
+```sh
+/usr/bin/python3 scripts/prepare_sft_data.py --exclude-manifest runs/docvqa-dev-v030/dev.jsonl --output runs/my-sft-data
+/usr/bin/python3 scripts/run_sft_experiment.py --data runs/my-sft-data --output runs/my-real-lora
+```
+
+参数协议保存在 configs/real-sft-v0.4.0.json。总入口依次启动检查、原模型验证/评测预测、LoRA 训练、选中 adapter 的新进程预测、严格配对评测；子进程同样使用当前系统 Python 和 PyTorch，在 VS Code 集成终端内运行。每阶段保存日志，每轮保存源码和输入快照，失败不会覆盖旧目录。
+
+调试入口 07 可单独运行真实 LoRA 训练。在 batching.py 的 labels、answer_loss 和 train_lora.py 的 backward、梯度裁剪及验证损失处下断点。每个 epoch 的 adapter 保存在 checkpoints，adapter.pt 指向验证答案 token NLL 最低的训练轮次；该选择依据不是评测集准确率。

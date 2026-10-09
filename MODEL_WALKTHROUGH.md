@@ -24,3 +24,14 @@ src/modeling.py 的 tiny_llava 创建真实 Transformers LlavaForConditionalGene
 相同正式数据划分和生成协议下比较：零样本与 LoRA；整页与固定裁剪/后续问题驱动裁剪；不同分辨率；是否有 OCR 辅助；可选 projector 适配。裁剪不能使用测试答案或真值区域作为输入，否则是 oracle 实验。
 
 官方资料：https://github.com/haotian-liu/LLaVA 、https://github.com/LLaVA-VL/LLaVA-NeXT 、https://huggingface.co/llava-hf/llava-onevision-qwen2-0.5b-ov-hf 。
+# 真实数据微调的阅读顺序（v0.4.0）
+
+先读 `configs/real-sft-v0.4.0.json`，明确这轮实验控制了什么：固定模型版本、512 长边上限、greedy 生成，语言模型 q/v LoRA rank=8，视觉编码器及 projector 冻结。再读 `scripts/prepare_sft_data.py` 的源文档分组，确认同一源文档的不同页也不能跨训练、验证和评测。
+
+接着跟踪 `scripts/train_lora.py`：`build_example` 将图片和问题转换成官方格式；labels 只保留答案与 EOS；`answer_loss` 计算答案的下一 token 预测损失；四个样本累积一次优化器更新，最后不足四个样本也按实际数量平均。这里优化的是每个样本答案 token 的平均损失，再对样本平均；验证 NLL 则按答案 token 数加权，二者口径需分清。
+
+LoRA 的基础线性层保持冻结，更新低秩 A/B。B 初始为零，所以插入 adapter 时模型输出与原模型等价。真实模型本轮有 540,672 个可训练参数：语言模型有 24 层、隐藏维度 896、14 个 attention heads、2 个 key/value heads，所以 q_proj 输出 896 维，v_proj 输出 128 维；rank=8 的 q/v LoRA 参数总数是 `24 × 8 × [(896+896)+(896+128)]`。这也体现了 grouped-query attention 的 q 与 v 输出维度不同。每轮 adapter 单独保存；`adapter.pt` 是训练轮次中验证 NLL 最低的版本。即使某轮训练 loss 下降，也不能直接宣称生成准确率提高，要用独立生成和逐题配对检查。
+
+512 输入的首次训练触发 MPS 内存上限。冻结基础权重并不意味着中间计算都无需保存：LoRA 的梯度仍依赖长序列中的激活。`--gradient-checkpointing` 通过重新计算中间激活减少保存量，代价是更多计算。采用 `use_reentrant=False`，让冻结输入嵌入的 LoRA 训练仍能计算梯度；测试会比较开启前后的损失和梯度。没有通过取消 MPS 内存上限来运行。
+
+最后读 `scripts/run_sft_experiment.py`：原模型生成、LoRA 训练、重新加载 adapter 生成、评测在独立子进程中依次执行。验证集负责选训练轮次，保留评测负责测本轮泛化。这里的 test 清单来自带答案的官方 validation 镜像，不能称官方盲测；看过结果后，后续调参应视其为开发数据。
