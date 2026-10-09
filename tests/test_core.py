@@ -10,6 +10,16 @@ from batching import build_example,answer_loss
 from evaluation import summarize,compare
 
 class CoreTests(unittest.TestCase):
+    def test_document_views_cover_page_and_match_control_prompt(self):
+        from PIL import Image
+        from views import prepare_views,multiview_messages
+        image=Image.new('RGB',(8,11),'red')
+        views=prepare_views(image,'whole-split')
+        self.assertEqual([v.size for v in views],[(8,11),(8,5),(8,6)])
+        self.assertEqual(views[1].height+views[2].height,image.height)
+        self.assertEqual(len(prepare_views(image,'repeat3')),3)
+        content=multiview_messages('q',3)[0]['content']
+        self.assertEqual(sum(c['type']=='image' for c in content),3)
     def test_checkpointing_preserves_lora_gradients_with_frozen_embeddings(self):
         import copy
         model=tiny_llava();model.config.use_cache=False;configure_lora(model,2,4,0,False)

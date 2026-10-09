@@ -52,3 +52,13 @@
 参数协议保存在 configs/real-sft-v0.4.0.json。总入口依次启动检查、原模型验证/评测预测、LoRA 训练、选中 adapter 的新进程预测、严格配对评测；子进程同样使用当前系统 Python 和 PyTorch，在 VS Code 集成终端内运行。每阶段保存日志，每轮保存源码和输入快照，失败不会覆盖旧目录。
 
 调试入口 07 可单独运行真实 LoRA 训练。在 batching.py 的 labels、answer_loss 和 train_lora.py 的 backward、梯度裁剪及验证损失处下断点。每个 epoch 的 adapter 保存在 checkpoints，adapter.pt 指向验证答案 token NLL 最低的训练轮次；该选择依据不是评测集准确率。
+
+## 固定多视图开发实验（v0.5.0）
+
+```sh
+/usr/bin/python3 scripts/run_view_experiment.py --manifest runs/docvqa-dev-v030/dev.jsonl --output runs/my-document-views
+```
+
+比较整页单图、三张重复整页、整页加上下半页。后两组使用同样的三图提示，嵌套 images=[[image1,image2,image3]] 进入 OneVision 官方多图处理路径。单图 anyres 路径与多图路径处理不同，故重复整页组是必要对照。没有使用答案或真实区域标注选择裁剪位置。实验只针对已有开发集，不能报告成独立测试收益。
+
+调试入口 08 可查看固定裁剪和多图 token 组织。建议在 views.py 的 prepare_views、infer.py 的 processor 和生成处设置断点。每次使用新的实验目录名。
