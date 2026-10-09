@@ -1,0 +1,18 @@
+{
+  "framework": "PyTorch",
+  "launch": "VS Code",
+  "health": {
+    "ready": true,
+    "framework": "PyTorch",
+    "device": "mps",
+    "model": "llava-hf/llava-onevision-qwen2-0.5b-ov-hf"
+  },
+  "page_served": true,
+  "invalid_request_status": 400,
+  "foreign_origin_status": 403,
+  "matches_saved_baseline": true,
+  "question_id": "63049",
+  "generation_seconds": 1.3408105,
+  "input_tokens": 1763,
+  "scope": "one real document end-to-end smoke check, not an accuracy benchmark"
+}

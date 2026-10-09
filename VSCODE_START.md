@@ -62,3 +62,25 @@
 比较整页单图、三张重复整页、整页加上下半页。后两组使用同样的三图提示，嵌套 images=[[image1,image2,image3]] 进入 OneVision 官方多图处理路径。单图 anyres 路径与多图路径处理不同，故重复整页组是必要对照。没有使用答案或真实区域标注选择裁剪位置。实验只针对已有开发集，不能报告成独立测试收益。
 
 调试入口 08 可查看固定裁剪和多图 token 组织。建议在 views.py 的 prepare_views、infer.py 的 processor 和生成处设置断点。每次使用新的实验目录名。
+
+## 本地问答页面
+
+调试面板选择「09 本地文档问答演示（MPS）」并启动。也可在 VS Code 集成终端执行：
+
+```sh
+PYTHONPATH=/Users/meiying/Documents/Codex/2026-10-07/zhe/.system-python-packages /usr/bin/python3 scripts/demo.py --device mps --port 8765
+```
+
+出现 `DEMO_READY` 后打开 http://127.0.0.1:8765 。上传 PNG/JPEG/WebP（不超过 5 MB、2000 万像素），输入问题，选择 512 或 768。使用固定官方基座、贪心生成，不加载 LoRA；页面不提供 OCR 或证据定位。当前主要验证英文单页文档。每次请求保存原图、问题、结果、源码和配置至 `runs/demo-requests/`，仅保留本机，不上传 GitHub。停止调试或在终端按 Ctrl+C 关闭服务。
+
+为了适配 16GB 内存，一次只启动一个模型进程；先结束训练/批量评测，再启动页面。
+
+## 四组独立评测复现
+
+以下目录仅在本机存在。改成新的 output/report 名称，禁止覆盖历史结果。
+
+```sh
+PYTHONPATH=/Users/meiying/Documents/Codex/2026-10-07/zhe/.system-python-packages /usr/bin/python3 scripts/run_independent_eval.py --manifest runs/independent-data-v060/test.jsonl --adapter runs/real-docvqa-lora-v040b/training/adapter.pt --output runs/independent-eval-new --report reports/independent-eval-new.json
+```
+
+比较原模型/已有 LoRA × 512/768，包含配对文档 bootstrap 和逐题失败清单。本轮文档已经被查看，后续调参应另设新的未查看评测集。下载脚本 `prepare_independent_eval.py` 使用固定候选池，排除先前所有真实数据；代理按本机网络配置设置，不写入公共仓库。
