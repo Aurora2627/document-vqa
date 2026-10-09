@@ -25,3 +25,17 @@
 运行和调试中已有：01 代码与测试、02 微型结构 MPS 验证、03 生成测试文档、04 本机预训练零样本问答、05 本机 LoRA 流程。可在 lora.py 的 forward、batching.py 的 labels 和 train_lora.py 的 loss 下断点。
 
 云端 7B 实验需要固定模型 SHA、安装 requirements-cloud.txt 并使用匹配服务器的 PyTorch CUDA 轮子；当前尚未验证该路径。一次小 batch 测量显存后再定训练规模。
+
+## 真实开发数据实验（v0.3.0）
+
+本地已有 runs/docvqa-dev-v030/dev.jsonl；调试配置 06 可直接重跑 512 基线，每次填写新的实验目录名。建议在 infer.py 的 processor 输入、model.generate 和答案解码处下断点。公开仓库不包含数据，其他设备先下载。下载脚本使用终端中配置的 HTTPS_PROXY，不硬编码代理。
+
+```sh
+/usr/bin/python3 scripts/prepare_docvqa.py --count 20 --output runs/my-docvqa-data
+/usr/bin/python3 scripts/infer.py --manifest runs/my-docvqa-data/dev.jsonl --model llava-hf/llava-onevision-qwen2-0.5b-ov-hf --revision 74dd0bf867a4cda7950c17663794267c60cf4b40 --device mps --max-image-edge 384 --output runs/my-dev-384
+/usr/bin/python3 scripts/infer.py --manifest runs/my-docvqa-data/dev.jsonl --model llava-hf/llava-onevision-qwen2-0.5b-ov-hf --revision 74dd0bf867a4cda7950c17663794267c60cf4b40 --device mps --max-image-edge 512 --output runs/my-dev-512
+/usr/bin/python3 scripts/evaluate.py --predictions runs/my-dev-384/predictions.jsonl --output runs/my-dev-384/answer-metrics.json
+/usr/bin/python3 scripts/evaluate.py --predictions runs/my-dev-512/predictions.jsonl --compare-to runs/my-dev-384/predictions.jsonl --output runs/my-dev-512/answer-metrics.json
+```
+
+开发集来自 viewer 顺序页面，未锁定 viewer revision，保存的图片哈希及原始响应用于本轮审计。不是完整官方基准评测。

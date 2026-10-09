@@ -7,8 +7,26 @@ from metrics import score_answer
 from data import check_document_splits,load_manifest
 from modeling import tiny_llava,tiny_batch
 from batching import build_example,answer_loss
+from evaluation import summarize,compare
 
 class CoreTests(unittest.TestCase):
+    def test_development_selection_keeps_one_question_per_source_document(self):
+        import sys
+        sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
+        from prepare_docvqa import select_rows
+        def item(document,page):
+            return {'row':{'ucsf_document_id':document,'docId':page,'data_split':'val','answers':['a']},'truncated_cells':[]}
+        payload={'rows':[item('a',1),item('a',2),item('b',3)]}
+        self.assertEqual([r['row']['docId'] for r in select_rows(payload,2)],[1,3])
+        with self.assertRaises(ValueError):select_rows(payload,3)
+    def test_paired_evaluation_rejects_missing_duplicate_and_changed_references(self):
+        row={'question_id':'1','document_id':'d','answers':['abc'],'prediction':'wrong'}
+        better={**row,'prediction':'abc'}
+        self.assertEqual(compare([row],[better])['improved'],1)
+        self.assertEqual(summarize([better])['anls'],1)
+        with self.assertRaises(ValueError):summarize([row,row])
+        with self.assertRaises(ValueError):compare([row],[{**better,'question_id':'2'}])
+        with self.assertRaises(ValueError):compare([row],[{**better,'answers':['other']}])
     def test_anls_multi_answer_threshold_and_normalization(self):
         self.assertEqual(score_answer('  ABC  ',['wrong','abc']),{'anls':1.,'exact_match':1.})
         self.assertEqual(score_answer('ab',['ac'])['anls'],0.)
