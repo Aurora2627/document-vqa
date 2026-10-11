@@ -1,0 +1,8 @@
+{
+  "count": 20,
+  "guided_nonempty": 16,
+  "shuffled_nonempty": 3,
+  "guided_context_truncated": 0,
+  "records_sha256": "97d08f41106f2f04858fe6a46af7337e0bfbed823ed313eeeb755faf17491b57",
+  "interpretation": "Shuffled query often yields no OCR context; not a matched-length wrong-evidence control or grounding recall"
+}

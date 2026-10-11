@@ -1,0 +1,2031 @@
+{
+  "version": "0.7.0",
+  "protocol": {
+    "model": "llava-hf/llava-onevision-qwen2-0.5b-ov-hf",
+    "revision": "74dd0bf867a4cda7950c17663794267c60cf4b40",
+    "device": "mps",
+    "max_image_edge": 512,
+    "rank": 8,
+    "alpha": 16,
+    "lr": 0.0001,
+    "epochs": 2,
+    "accumulation": 4,
+    "seed": 42,
+    "train_projector": false,
+    "gradient_checkpointing": true,
+    "scope": "64 nested training documents; new 24 validation and 64 reserved documents; no single-factor data-scale causal claim"
+  },
+  "dataset": {
+    "dataset": "pixparse/docvqa-single-page-questions",
+    "validation_dataset": "lmms-lab-encoder/DocVQA",
+    "repository_revisions_observed": {
+      "train": "33136ef456fa5a3fe68568d6e31dda4eeff95b9b",
+      "validation": "539088ef8a8ada01ac8e2e6d4e372586748a265e"
+    },
+    "viewer_revision_pinned": false,
+    "retained_training_questions": 59,
+    "excluded_documents": 152,
+    "raw_response_sha256": {
+      "validation-3400.json": "fd474d39edd929bf98351609058c3ca7d64cef0eca089f0e0b94c433617510e8",
+      "validation-2600.json": "9349cd6d24f6802d7bc231a1c66fd52d319e47e1eb552f1577976548e73c9eb7",
+      "train-4000.json": "088063294ba4e8b27fd538f11c4901b226ea9fae35bf9f1bad2369355c451540",
+      "validation-1200.json": "8b9a7a303c32edd1af5856e0b98977bf76c37568c7cb54209e0d866fac2041d1",
+      "validation-2400.json": "bc6cc9d2ef20fc17e0456bd24b1ca35889a73c315382adcf91ba6076dc70e1c7",
+      "validation-2800.json": "a9580ecc9e2aca9020ee430c0866aa6d66cb8f1a4d221df4ee3cefff05be7e18",
+      "train-5000.json": "bfa94cc4cb8043489437532e9ee77fb1eb511daf426aabbead047223c624e95e",
+      "train-after.json": "5e29ba1035f4cb8204232b36eb02d75bb3a588eba327ac535205ce3b1f777d47",
+      "train-before.json": "5e29ba1035f4cb8204232b36eb02d75bb3a588eba327ac535205ce3b1f777d47",
+      "validation-3200.json": "8e32055632552d034d701e1b4a4dcaae54ae3d89735116096e907c1226cb57e8",
+      "validation-1600.json": "eba0af352620290b8eb112a5de87fe3fa630b04917f7655c13f4815eae09da01",
+      "validation-2200.json": "f68056d4125a96674aa840f5cdd0634eea47a89e23cbf87241f5a44fff612e21",
+      "train-0.json": "70d74f66b43e42b207f42eb41b93cdbab3ad097b1f4bdd01f0c21e20963f0586",
+      "validation-1800.json": "4ffe0c5dad7aef76ce5d6d1131b23a5610f4bae1bb40eb6d5cc027fd04c03f8f",
+      "validation-1400.json": "fea8f7ed8f4c56b24dc1b6c6245f28146cf16eeb71fb7771609065043d93745e",
+      "validation-before.json": "1a1e5829da32832c97463974cb5e1e2b4dd5f4a9c200319a98b11d62655704da",
+      "validation-800.json": "bc08f4857504926498013c374fd3323619abfee88ef3f2273f0c4524f53b05a0",
+      "validation-400.json": "a14920e83d456f1ef15d1f5f7acf27c88689aa847e34abeb295cf6d82834a8b8",
+      "train-3000.json": "a1383f49b7f15cd507dbcdd8e37c063683838d1b2075b9d5fd6cc2871433be7a",
+      "validation-after.json": "1a1e5829da32832c97463974cb5e1e2b4dd5f4a9c200319a98b11d62655704da",
+      "train-2000.json": "464329666c2b3090d28e812fc0ed5cf47c8c41daa2ada679c61fc7584b288bfc",
+      "validation-600.json": "d848f8033baa7afe4fa6c0a087fc7cbe4f55551a97af2f7063ef8ad3ec43353b",
+      "validation-200.json": "a73ecd00af2dfcfaf3eecfdb532d5358287b4a3621bde92516b109aea107b7e7",
+      "train-1000.json": "96ee2254bf7a8c6dbbfb32e6c496f77edb404e38179738351e6bd08b2e0adcdd"
+    },
+    "splits": {
+      "train": {
+        "questions": 122,
+        "source_documents": 64,
+        "manifest_sha256": "4f3ffdd4a61f0a203bb11401406c462e9bc43110708cc0258d01237cf385739f"
+      },
+      "val": {
+        "questions": 24,
+        "source_documents": 24,
+        "manifest_sha256": "7b2446201279a5adb2578e50fb1b3d1c0e9feabe16c7c9b68b4140d1a14f4030"
+      },
+      "test": {
+        "questions": 64,
+        "source_documents": 64,
+        "manifest_sha256": "1b3d85199d9646766e7e932b5a2aea05b0175966969c4654280f2aea23979feb"
+      }
+    },
+    "scope": "expanded nested training set; new validation and reserved labeled-validation evaluation, not official blind test"
+  },
+  "training": {
+    "initial_validation_nll": 0.9502889702194616,
+    "best_validation_nll": 0.8297303316363117,
+    "best_epoch": 2,
+    "optimizer_steps": 62,
+    "trainable_parameters": 540672,
+    "train_size": 122,
+    "val_size": 24,
+    "selection": "lowest trained-epoch validation NLL; compare to frozen baseline separately"
+  },
+  "adapter_sha256": "ecd4d40b6725d48867c4bbe4d387c30b81a5b98610916f94f49bda2bcb89daef",
+  "results": {
+    "base": {
+      "count": 64,
+      "documents": 64,
+      "metric_definition": "ANLS-style: lowercase, strip/collapse whitespace, normalized edit distance < 0.5; best reference",
+      "official_evaluator_parity_verified": false,
+      "anls": 0.8176369775828605,
+      "exact_match": 0.59375,
+      "generation_seconds_median": 1.3377681874999965,
+      "generation_seconds_total": 82.43399245799998,
+      "by_question_type": {
+        "form": {
+          "count": 10,
+          "anls": 0.9672542735042736
+        },
+        "layout": {
+          "count": 35,
+          "anls": 0.8563182569064923
+        },
+        "Image/Photo": {
+          "count": 1,
+          "anls": 0.0
+        },
+        "others": {
+          "count": 4,
+          "anls": 0.7942810457516339
+        },
+        "free_text": {
+          "count": 9,
+          "anls": 0.7388630420239616
+        },
+        "handwritten": {
+          "count": 3,
+          "anls": 0.9375
+        },
+        "table/list": {
+          "count": 9,
+          "anls": 0.7039241622574957
+        },
+        "Yes/No": {
+          "count": 1,
+          "anls": 1.0
+        }
+      },
+      "per_question": [
+        {
+          "question_id": "59431",
+          "anls": 0.8461538461538461,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "6796",
+          "anls": 0.0,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "46495",
+          "anls": 0.9272727272727272,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "57122",
+          "anls": 0.0,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "21063",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "51224",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "822",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "51654",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "46502",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "15383",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "61634",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "33923",
+          "anls": 0.9705882352941176,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "61550",
+          "anls": 0.9375,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "46555",
+          "anls": 0.0,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "49577",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "52625",
+          "anls": 0.8571428571428572,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "44955",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "58397",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "58689",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "2199",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "49565",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "58502",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "51356",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "1972",
+          "anls": 0.7,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "58105",
+          "anls": 0.0,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "19145",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "782",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "59589",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "16789",
+          "anls": 0.8888888888888888,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "8560",
+          "anls": 0.625,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "29763",
+          "anls": 0.5714285714285714,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "58501",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "58384",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "16826",
+          "anls": 0.75,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "59636",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "53099",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "59625",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "59561",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "36920",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "58694",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "5491",
+          "anls": 0.5882352941176471,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "42027",
+          "anls": 0.0,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "53087",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "2277",
+          "anls": 0.75,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "5662",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "50207",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "58024",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "58424",
+          "anls": 0.0,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "357",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "44921",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "37333",
+          "anls": 0.0,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "47758",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "60104",
+          "anls": 0.8461538461538461,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "5193",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "51713",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "50501",
+          "anls": 0.0,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "59362",
+          "anls": 0.5555555555555556,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "21048",
+          "anls": 0.8620689655172413,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "60903",
+          "anls": 0.8888888888888888,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "62948",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "47078",
+          "anls": 0.875,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "53813",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "61578",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "50529",
+          "anls": 0.8888888888888888,
+          "exact_match": 0.0
+        }
+      ]
+    },
+    "prior": {
+      "count": 64,
+      "documents": 64,
+      "metric_definition": "ANLS-style: lowercase, strip/collapse whitespace, normalized edit distance < 0.5; best reference",
+      "official_evaluator_parity_verified": false,
+      "anls": 0.7940439165666567,
+      "exact_match": 0.578125,
+      "generation_seconds_median": 2.007761353500001,
+      "generation_seconds_total": 128.77095537400004,
+      "by_question_type": {
+        "form": {
+          "count": 10,
+          "anls": 0.8783653846153847
+        },
+        "layout": {
+          "count": 35,
+          "anls": 0.8861752153638565
+        },
+        "Image/Photo": {
+          "count": 1,
+          "anls": 0.0
+        },
+        "others": {
+          "count": 4,
+          "anls": 0.4494949494949495
+        },
+        "free_text": {
+          "count": 9,
+          "anls": 0.5997769478161634
+        },
+        "handwritten": {
+          "count": 3,
+          "anls": 0.9375
+        },
+        "table/list": {
+          "count": 9,
+          "anls": 0.636904761904762
+        },
+        "Yes/No": {
+          "count": 1,
+          "anls": 1.0
+        }
+      },
+      "per_question": [
+        {
+          "question_id": "59431",
+          "anls": 0.8461538461538461,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "6796",
+          "anls": 0.0,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "46495",
+          "anls": 0.9272727272727272,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "57122",
+          "anls": 0.0,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "21063",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "51224",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "822",
+          "anls": 0.0,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "51654",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "46502",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "15383",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "61634",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "33923",
+          "anls": 0.9705882352941176,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "61550",
+          "anls": 0.9375,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "46555",
+          "anls": 0.7241379310344828,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "49577",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "52625",
+          "anls": 0.8571428571428572,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "44955",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "58397",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "58689",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "2199",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "49565",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "58502",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "51356",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "1972",
+          "anls": 0.0,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "58105",
+          "anls": 0.0,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "19145",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "782",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "59589",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "16789",
+          "anls": 0.8888888888888888,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "8560",
+          "anls": 0.6666666666666667,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "29763",
+          "anls": 0.0,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "58501",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "58384",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "16826",
+          "anls": 0.75,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "59636",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "53099",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "59625",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "59561",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "36920",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "58694",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "5491",
+          "anls": 0.9090909090909091,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "42027",
+          "anls": 0.8571428571428572,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "53087",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "2277",
+          "anls": 0.75,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "5662",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "50207",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "58024",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "58424",
+          "anls": 0.0,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "357",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "44921",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "37333",
+          "anls": 0.0,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "47758",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "60104",
+          "anls": 0.8461538461538461,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "5193",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "51713",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "50501",
+          "anls": 0.0,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "59362",
+          "anls": 0.5555555555555556,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "21048",
+          "anls": 0.5686274509803921,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "60903",
+          "anls": 0.0,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "62948",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "47078",
+          "anls": 0.875,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "53813",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "61578",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "50529",
+          "anls": 0.8888888888888888,
+          "exact_match": 0.0
+        }
+      ]
+    },
+    "expanded": {
+      "count": 64,
+      "documents": 64,
+      "metric_definition": "ANLS-style: lowercase, strip/collapse whitespace, normalized edit distance < 0.5; best reference",
+      "official_evaluator_parity_verified": false,
+      "anls": 0.7940439165666567,
+      "exact_match": 0.578125,
+      "generation_seconds_median": 1.8493698330000043,
+      "generation_seconds_total": 116.87837724999996,
+      "by_question_type": {
+        "form": {
+          "count": 10,
+          "anls": 0.8783653846153847
+        },
+        "layout": {
+          "count": 35,
+          "anls": 0.8861752153638565
+        },
+        "Image/Photo": {
+          "count": 1,
+          "anls": 0.0
+        },
+        "others": {
+          "count": 4,
+          "anls": 0.4494949494949495
+        },
+        "free_text": {
+          "count": 9,
+          "anls": 0.5997769478161634
+        },
+        "handwritten": {
+          "count": 3,
+          "anls": 0.9375
+        },
+        "table/list": {
+          "count": 9,
+          "anls": 0.636904761904762
+        },
+        "Yes/No": {
+          "count": 1,
+          "anls": 1.0
+        }
+      },
+      "per_question": [
+        {
+          "question_id": "59431",
+          "anls": 0.8461538461538461,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "6796",
+          "anls": 0.0,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "46495",
+          "anls": 0.9272727272727272,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "57122",
+          "anls": 0.0,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "21063",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "51224",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "822",
+          "anls": 0.0,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "51654",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "46502",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "15383",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "61634",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "33923",
+          "anls": 0.9705882352941176,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "61550",
+          "anls": 0.9375,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "46555",
+          "anls": 0.7241379310344828,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "49577",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "52625",
+          "anls": 0.8571428571428572,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "44955",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "58397",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "58689",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "2199",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "49565",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "58502",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "51356",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "1972",
+          "anls": 0.0,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "58105",
+          "anls": 0.0,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "19145",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "782",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "59589",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "16789",
+          "anls": 0.8888888888888888,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "8560",
+          "anls": 0.6666666666666667,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "29763",
+          "anls": 0.0,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "58501",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "58384",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "16826",
+          "anls": 0.75,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "59636",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "53099",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "59625",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "59561",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "36920",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "58694",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "5491",
+          "anls": 0.9090909090909091,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "42027",
+          "anls": 0.8571428571428572,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "53087",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "2277",
+          "anls": 0.75,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "5662",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "50207",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "58024",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "58424",
+          "anls": 0.0,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "357",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "44921",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "37333",
+          "anls": 0.0,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "47758",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "60104",
+          "anls": 0.8461538461538461,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "5193",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "51713",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "50501",
+          "anls": 0.0,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "59362",
+          "anls": 0.5555555555555556,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "21048",
+          "anls": 0.5686274509803921,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "60903",
+          "anls": 0.0,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "62948",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "47078",
+          "anls": 0.875,
+          "exact_match": 0.0
+        },
+        {
+          "question_id": "53813",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "61578",
+          "anls": 1.0,
+          "exact_match": 1.0
+        },
+        {
+          "question_id": "50529",
+          "anls": 0.8888888888888888,
+          "exact_match": 0.0
+        }
+      ]
+    }
+  },
+  "comparisons": {
+    "base_to_expanded": {
+      "paired": {
+        "count": 64,
+        "mean_anls_delta": -0.02359306101620376,
+        "improved": 4,
+        "worsened": 5,
+        "unchanged": 55,
+        "per_question": [
+          {
+            "question_id": "59431",
+            "left_anls": 0.8461538461538461,
+            "right_anls": 0.8461538461538461,
+            "delta": 0.0
+          },
+          {
+            "question_id": "6796",
+            "left_anls": 0.0,
+            "right_anls": 0.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "46495",
+            "left_anls": 0.9272727272727272,
+            "right_anls": 0.9272727272727272,
+            "delta": 0.0
+          },
+          {
+            "question_id": "57122",
+            "left_anls": 0.0,
+            "right_anls": 0.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "21063",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "51224",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "822",
+            "left_anls": 1.0,
+            "right_anls": 0.0,
+            "delta": -1.0
+          },
+          {
+            "question_id": "51654",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "46502",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "15383",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "61634",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "33923",
+            "left_anls": 0.9705882352941176,
+            "right_anls": 0.9705882352941176,
+            "delta": 0.0
+          },
+          {
+            "question_id": "61550",
+            "left_anls": 0.9375,
+            "right_anls": 0.9375,
+            "delta": 0.0
+          },
+          {
+            "question_id": "46555",
+            "left_anls": 0.0,
+            "right_anls": 0.7241379310344828,
+            "delta": 0.7241379310344828
+          },
+          {
+            "question_id": "49577",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "52625",
+            "left_anls": 0.8571428571428572,
+            "right_anls": 0.8571428571428572,
+            "delta": 0.0
+          },
+          {
+            "question_id": "44955",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "58397",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "58689",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "2199",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "49565",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "58502",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "51356",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "1972",
+            "left_anls": 0.7,
+            "right_anls": 0.0,
+            "delta": -0.7
+          },
+          {
+            "question_id": "58105",
+            "left_anls": 0.0,
+            "right_anls": 0.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "19145",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "782",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "59589",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "16789",
+            "left_anls": 0.8888888888888888,
+            "right_anls": 0.8888888888888888,
+            "delta": 0.0
+          },
+          {
+            "question_id": "8560",
+            "left_anls": 0.625,
+            "right_anls": 0.6666666666666667,
+            "delta": 0.04166666666666674
+          },
+          {
+            "question_id": "29763",
+            "left_anls": 0.5714285714285714,
+            "right_anls": 0.0,
+            "delta": -0.5714285714285714
+          },
+          {
+            "question_id": "58501",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "58384",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "16826",
+            "left_anls": 0.75,
+            "right_anls": 0.75,
+            "delta": 0.0
+          },
+          {
+            "question_id": "59636",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "53099",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "59625",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "59561",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "36920",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "58694",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "5491",
+            "left_anls": 0.5882352941176471,
+            "right_anls": 0.9090909090909091,
+            "delta": 0.320855614973262
+          },
+          {
+            "question_id": "42027",
+            "left_anls": 0.0,
+            "right_anls": 0.8571428571428572,
+            "delta": 0.8571428571428572
+          },
+          {
+            "question_id": "53087",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "2277",
+            "left_anls": 0.75,
+            "right_anls": 0.75,
+            "delta": 0.0
+          },
+          {
+            "question_id": "5662",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "50207",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "58024",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "58424",
+            "left_anls": 0.0,
+            "right_anls": 0.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "357",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "44921",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "37333",
+            "left_anls": 0.0,
+            "right_anls": 0.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "47758",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "60104",
+            "left_anls": 0.8461538461538461,
+            "right_anls": 0.8461538461538461,
+            "delta": 0.0
+          },
+          {
+            "question_id": "5193",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "51713",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "50501",
+            "left_anls": 0.0,
+            "right_anls": 0.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "59362",
+            "left_anls": 0.5555555555555556,
+            "right_anls": 0.5555555555555556,
+            "delta": 0.0
+          },
+          {
+            "question_id": "21048",
+            "left_anls": 0.8620689655172413,
+            "right_anls": 0.5686274509803921,
+            "delta": -0.2934415145368492
+          },
+          {
+            "question_id": "60903",
+            "left_anls": 0.8888888888888888,
+            "right_anls": 0.0,
+            "delta": -0.8888888888888888
+          },
+          {
+            "question_id": "62948",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "47078",
+            "left_anls": 0.875,
+            "right_anls": 0.875,
+            "delta": 0.0
+          },
+          {
+            "question_id": "53813",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "61578",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "50529",
+            "left_anls": 0.8888888888888888,
+            "right_anls": 0.8888888888888888,
+            "delta": 0.0
+          }
+        ]
+      },
+      "uncertainty": {
+        "method": "paired percentile bootstrap over independent documents",
+        "samples": 10000,
+        "seed": 42,
+        "metrics": {
+          "anls": {
+            "delta": -0.023593061016203763,
+            "ci95": [
+              -0.08615419832379138,
+              0.03665235055865998
+            ]
+          },
+          "exact_match": {
+            "delta": -0.015625,
+            "ci95": [
+              -0.046875,
+              0.0
+            ]
+          }
+        },
+        "scope": "sampling uncertainty within selected candidate pool; not population representativeness"
+      }
+    },
+    "prior_to_expanded": {
+      "paired": {
+        "count": 64,
+        "mean_anls_delta": 0.0,
+        "improved": 0,
+        "worsened": 0,
+        "unchanged": 64,
+        "per_question": [
+          {
+            "question_id": "59431",
+            "left_anls": 0.8461538461538461,
+            "right_anls": 0.8461538461538461,
+            "delta": 0.0
+          },
+          {
+            "question_id": "6796",
+            "left_anls": 0.0,
+            "right_anls": 0.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "46495",
+            "left_anls": 0.9272727272727272,
+            "right_anls": 0.9272727272727272,
+            "delta": 0.0
+          },
+          {
+            "question_id": "57122",
+            "left_anls": 0.0,
+            "right_anls": 0.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "21063",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "51224",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "822",
+            "left_anls": 0.0,
+            "right_anls": 0.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "51654",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "46502",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "15383",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "61634",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "33923",
+            "left_anls": 0.9705882352941176,
+            "right_anls": 0.9705882352941176,
+            "delta": 0.0
+          },
+          {
+            "question_id": "61550",
+            "left_anls": 0.9375,
+            "right_anls": 0.9375,
+            "delta": 0.0
+          },
+          {
+            "question_id": "46555",
+            "left_anls": 0.7241379310344828,
+            "right_anls": 0.7241379310344828,
+            "delta": 0.0
+          },
+          {
+            "question_id": "49577",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "52625",
+            "left_anls": 0.8571428571428572,
+            "right_anls": 0.8571428571428572,
+            "delta": 0.0
+          },
+          {
+            "question_id": "44955",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "58397",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "58689",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "2199",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "49565",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "58502",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "51356",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "1972",
+            "left_anls": 0.0,
+            "right_anls": 0.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "58105",
+            "left_anls": 0.0,
+            "right_anls": 0.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "19145",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "782",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "59589",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "16789",
+            "left_anls": 0.8888888888888888,
+            "right_anls": 0.8888888888888888,
+            "delta": 0.0
+          },
+          {
+            "question_id": "8560",
+            "left_anls": 0.6666666666666667,
+            "right_anls": 0.6666666666666667,
+            "delta": 0.0
+          },
+          {
+            "question_id": "29763",
+            "left_anls": 0.0,
+            "right_anls": 0.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "58501",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "58384",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "16826",
+            "left_anls": 0.75,
+            "right_anls": 0.75,
+            "delta": 0.0
+          },
+          {
+            "question_id": "59636",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "53099",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "59625",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "59561",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "36920",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "58694",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "5491",
+            "left_anls": 0.9090909090909091,
+            "right_anls": 0.9090909090909091,
+            "delta": 0.0
+          },
+          {
+            "question_id": "42027",
+            "left_anls": 0.8571428571428572,
+            "right_anls": 0.8571428571428572,
+            "delta": 0.0
+          },
+          {
+            "question_id": "53087",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "2277",
+            "left_anls": 0.75,
+            "right_anls": 0.75,
+            "delta": 0.0
+          },
+          {
+            "question_id": "5662",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "50207",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "58024",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "58424",
+            "left_anls": 0.0,
+            "right_anls": 0.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "357",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "44921",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "37333",
+            "left_anls": 0.0,
+            "right_anls": 0.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "47758",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "60104",
+            "left_anls": 0.8461538461538461,
+            "right_anls": 0.8461538461538461,
+            "delta": 0.0
+          },
+          {
+            "question_id": "5193",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "51713",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "50501",
+            "left_anls": 0.0,
+            "right_anls": 0.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "59362",
+            "left_anls": 0.5555555555555556,
+            "right_anls": 0.5555555555555556,
+            "delta": 0.0
+          },
+          {
+            "question_id": "21048",
+            "left_anls": 0.5686274509803921,
+            "right_anls": 0.5686274509803921,
+            "delta": 0.0
+          },
+          {
+            "question_id": "60903",
+            "left_anls": 0.0,
+            "right_anls": 0.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "62948",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "47078",
+            "left_anls": 0.875,
+            "right_anls": 0.875,
+            "delta": 0.0
+          },
+          {
+            "question_id": "53813",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "61578",
+            "left_anls": 1.0,
+            "right_anls": 1.0,
+            "delta": 0.0
+          },
+          {
+            "question_id": "50529",
+            "left_anls": 0.8888888888888888,
+            "right_anls": 0.8888888888888888,
+            "delta": 0.0
+          }
+        ]
+      },
+      "uncertainty": {
+        "method": "paired percentile bootstrap over independent documents",
+        "samples": 10000,
+        "seed": 42,
+        "metrics": {
+          "anls": {
+            "delta": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "exact_match": {
+            "delta": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "scope": "sampling uncertainty within selected candidate pool; not population representativeness"
+      }
+    }
+  },
+  "prediction_sha256": {
+    "base": "f790206ad87043b71bd1ac8c6e55328e56fa779df0acd1d276294b27db3a39ab",
+    "prior": "12849a0c6a49680cdd1b74783d1a0f8ec74f10486a27949c4ecb07bb189e01f1",
+    "expanded": "a8bd1430f6393f76db383c20b7893375b3a538564e9b4c585078ab6692524a98"
+  },
+  "limitations": [
+    "64 reserved labeled-validation documents; finite candidate pool, not official blind test",
+    "ANLS-style metrics; official evaluator parity not verified",
+    "Prior and expanded adapters use different validation sets/checkpoint selection, so this is not a pure data-volume ablation",
+    "Exploratory paired intervals not adjusted for multiple comparisons; dataset inspected after evaluation"
+  ]
+}

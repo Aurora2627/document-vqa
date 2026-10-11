@@ -1,8 +1,24 @@
-# LLaVA 文档视觉问答与轻量微调
+# LLaVA 参数高效微调与问题驱动文档阅读
 
-状态：v0.6.0 新增 100 份独立文档评测、分辨率 × LoRA 四组对照、配对 bootstrap、失败案例复核和本地问答页面。十四项代码检查通过。此前 20 题保留评测未见 LoRA 收益；本轮新子集观察到正向收益，不能代替完整官方榜单。
+状态：v0.7.0 完成扩展真实 LoRA 训练、新 64 文档保留评测、问题驱动九格选择和 OCR 图文消融。全部从 VS Code 使用系统 Python/PyTorch 运行，16 项检查通过。本轮未观察到扩展微调或区域/OCR 的稳定收益；保留完整负面结果。
 
 ## 最新结果
+
+训练由 59 题/32 源文档扩为 122 题/64 源文档，包含原有训练题；另设新验证 24 文档、新保留评测 64 文档。两轮 MPS LoRA、540,672 个可训练参数，验证 NLL 0.9503→0.8297，验证 EM 7/24→11/24。48 个 B 矩阵均非零，保留集 24 个原始回答发生变化。
+
+| 新 64 文档保留评测，统一整页 512 | 完全匹配 | ANLS 风格 |
+|---|---:|---:|
+| 原模型 | 38/64 | 0.8176 |
+| 旧 LoRA（59 题） | 37/64 | 0.7940 |
+| 新 LoRA（122 题） | 37/64 | 0.7940 |
+
+新旧权重不同，3 个原始回答不同，但这 64 题评分一致。新 LoRA 对原模型的 ANLS 差值为 -0.0236，配对 bootstrap 95% 区间 [-0.0862, 0.0367]。验证改善没有转化成本轮保留集收益；新旧验证集不同，不能把比较称作纯数据量消融。保留评测是带标签 validation 镜像子集，不是官方盲测。
+
+在旧 20 文档开发集上，新 LoRA 整页 768 为 12/20，问题九格融合 6/20，OCR 横带裁剪 12/20，整页加 OCR 提示 8/20。九格融合设置固定/错配问题控制并核验相同 reader token 数；OCR 设置仅问题、仅文字、裁剪、图文与错配检索控制。错配 OCR 17/20 次没有文字，因此不能作严格等量文字对照。候选框未经真实框验证，不宣称 grounding。
+
+详见 [本轮研究报告](reports/deepening-v0.7.0.md)、[裁剪失败复核](reports/failure-analysis-v0.7.0.md) 和 [学习路线](LEARNING_GUIDE.md)。本地展示页面继续使用原模型整页问答；本轮算法以独立实验入口运行。
+
+## 上一轮结果（v0.6.0）
 
 固定模型与已有 adapter 后，从公开 DocVQA validation 镜像选择 100 个新源文档，每文档一道题；排除全部既有真实训练、验证、保留评测及开发文档，并检查图片哈希。候选池有限，不是官方盲测。
 
@@ -60,7 +76,10 @@
 - `scripts/evaluate.py` / `src/evaluation.py`：ANLS 风格分数、规范化 Exact Match、题型分析及严格逐题对照；官方 evaluator 一致性尚未验证。
 - `scripts/prepare_independent_eval.py` / `scripts/run_independent_eval.py`：锁定新文档与四组对照；`src/paired_statistics.py` 使用 PyTorch 做配对文档 bootstrap。
 - `scripts/demo.py`：无需新增依赖的本地文档问答页面；每次请求保存源码、图片、配置和结果。`scripts/check_demo.py` 检查真实 HTTP 推理与基线一致性。
+- `scripts/prepare_expanded_sft.py` / `scripts/run_expanded_study.py`：保留旧训练样本并扩展源文档，重新设立验证/保留评测，比较冻结原模型、旧 adapter、新 adapter。
+- `src/region_reading.py` / `scripts/run_region_experiment.py`：问题驱动九格候选、原图裁剪与整页局部融合；固定区域及错配问题控制。
+- `scripts/prepare_ocr.py` / `src/ocr_regions.py` / `scripts/run_ocr_study.py`：PyTorch OCR、文字/坐标检索、图像和文字阅读消融；候选区域不等于已验证证据。
 
 这个 LoRA checkpoint 是本项目的 `.pt` 格式，不是 PEFT 的 adapter 格式。
 
-运行见 [VS Code 启动说明](VSCODE_START.md)，原理见 [模型与代码导读](MODEL_WALKTHROUGH.md)，后续研究设计见 [项目方案](PROJECT_PLAN.md)。
+运行见 [VS Code 启动说明](VSCODE_START.md)，原理见 [模型与代码导读](MODEL_WALKTHROUGH.md)，学习顺序见 [学习路线](LEARNING_GUIDE.md)，后续研究设计见 [项目方案](PROJECT_PLAN.md)。

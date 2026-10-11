@@ -84,3 +84,29 @@ PYTHONPATH=/Users/meiying/Documents/Codex/2026-10-07/zhe/.system-python-packages
 ```
 
 比较原模型/已有 LoRA × 512/768，包含配对文档 bootstrap 和逐题失败清单。本轮文档已经被查看，后续调参应另设新的未查看评测集。下载脚本 `prepare_independent_eval.py` 使用固定候选池，排除先前所有真实数据；代理按本机网络配置设置，不写入公共仓库。
+
+## 扩展微调与问题驱动阅读（v0.7.0）
+
+仍在 VS Code 集成终端运行。先确认终端继承本机 `PYTHONPATH`；没有继承时，在命令前加上上面的共享依赖路径。所有 output 和 report 都换新名字。以下数据和 adapter 路径是本机真实实验记录，公开仓库不附带这些文件。
+
+```sh
+/usr/bin/python3 scripts/prepare_expanded_sft.py --previous-train runs/docvqa-sft-data-v040c/train.jsonl --exclude runs/docvqa-dev-v030/dev.jsonl runs/docvqa-sft-data-v040c/val.jsonl runs/docvqa-sft-data-v040c/test.jsonl runs/independent-data-v060/test.jsonl --output runs/my-expanded-data
+/usr/bin/python3 scripts/run_expanded_study.py --data runs/expanded-data-v070 --previous-adapter runs/real-docvqa-lora-v040b/training/adapter.pt --development runs/docvqa-dev-v030/dev.jsonl --output runs/my-expanded-study --report reports/my-expanded-sft.json --region-report reports/my-trained-regions.json
+/usr/bin/python3 scripts/run_region_experiment.py --manifest runs/docvqa-dev-v030/dev.jsonl --output runs/my-base-regions --report reports/my-base-regions.json
+```
+
+训练协议 `configs/expanded-sft-v0.7.0.json`：两轮、rank 8、alpha 16、学习率 1e-4、梯度累积 4、512 输入，冻结视觉编码器和 projector。可以在 `src/region_reading.py` 的九个数字 logits、`prepare_region_views` 的原图坐标、`read_views` 的多图输入处下断点。区域排序是未经区域监督的模型提示基线，不把它称作已训练的定位模型。
+
+OCR 使用单独的本机缓存依赖目录，避免修改共享 PyTorch 环境。首次安装和提取也在 VS Code 中执行：
+
+```sh
+/usr/bin/python3 scripts/install_ocr_support.py --output runs/my-ocr-install
+/usr/bin/python3 scripts/prepare_ocr.py --manifest runs/docvqa-dev-v030/dev.jsonl --output runs/my-ocr-cache
+/usr/bin/python3 scripts/run_ocr_study.py --manifest runs/docvqa-dev-v030/dev.jsonl --ocr runs/ocr-dev-v070 --adapter runs/expanded-study-v070/sft/training/adapter.pt --output runs/my-ocr-study --report reports/my-ocr-study.json
+```
+
+安装器使用 `requirements-ocr.txt` 的固定版本和系统 Python，将轮子安装到忽略的 `data/cache/ocr-python`。提取器通过官方发布地址下载 CRAFT/英文识别权重，验证上游 MD5 并记录 SHA256；CPU PyTorch OCR 不使用量化。图片哈希必须与缓存匹配。此路径只验证了本机英文数据。
+
+`src/ocr_regions.py` 的 BM25 只接收问题、OCR 与图片大小。候选横带从原图裁剪，文字上下文上限和回退原因都保存。`question-only` / `ocr-only` 不输入图像；错配问题检索组仍回答原问题。检查单题图像 token、文字 token 和 `retrieved-regions.jsonl`，不要只看最终总分。
+
+运行和调试已增加 10 扩展训练、11 区域选择、12 OCR 提取、13 OCR 消融。一个 MPS 模型任务结束后再运行下一个；OCR 消融的 `--wait-for-study` 可等待训练研究全部结束才加载模型。本地演示页面目前仍只展示原模型整页阅读，研究方法以保存的实验入口为准。

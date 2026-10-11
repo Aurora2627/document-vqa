@@ -1,0 +1,15 @@
+{
+  "model": "llava-hf/llava-onevision-qwen2-0.5b-ov-hf",
+  "revision": "74dd0bf867a4cda7950c17663794267c60cf4b40",
+  "device": "mps",
+  "max_image_edge": 512,
+  "rank": 8,
+  "alpha": 16,
+  "lr": 0.0001,
+  "epochs": 2,
+  "accumulation": 4,
+  "seed": 42,
+  "train_projector": false,
+  "gradient_checkpointing": true,
+  "scope": "64 nested training documents; new 24 validation and 64 reserved documents; no single-factor data-scale causal claim"
+}

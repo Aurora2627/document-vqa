@@ -1,0 +1,39 @@
+"""Real PyTorch EasyOCR text/coordinates, independent of questions and reference answers."""
+import argparse,hashlib,json,sys,time,zipfile
+from pathlib import Path
+ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT/'data/cache/ocr-python'));sys.path.insert(0,str(ROOT/'src'))
+import torch
+import easyocr
+from easyocr.config import detection_models,recognition_models
+from prepare_docvqa import fetch
+from data import load_manifest
+from run_record import snapshot_run,sha
+if __name__=='__main__':
+    p=argparse.ArgumentParser();p.add_argument('--manifest',required=True);p.add_argument('--output',required=True);args=p.parse_args()
+    rows=load_manifest(args.manifest);torch.set_num_threads(2)
+    out=snapshot_run(args.output,{**vars(args),'ocr':'EasyOCR 1.7.2','framework':'PyTorch','device':'cpu','languages':['en'],
+        'canvas_size':1600,'batch_size':1,'workers':0,'paragraph':False,'cpu_threads':2,'scope':'no question/answer used during OCR extraction'},[args.manifest])
+    weights=ROOT/'data/cache/easyocr-models';weights.mkdir(parents=True,exist_ok=True);sources=[]
+    for config in [detection_models['craft'],recognition_models['gen2']['english_g2']]:
+        target=weights/config['filename']
+        if not target.exists():
+            archive=out/(config['filename']+'.zip');fetch(config['url'],archive)
+            with zipfile.ZipFile(archive) as zipped:
+                # Extract just the expected regular member, never trust archive paths.
+                members=[name for name in zipped.namelist() if Path(name).name==target.name]
+                if len(members)!=1:raise ValueError('Unexpected model archive')
+                target.write_bytes(zipped.read(members[0]))
+        if hashlib.md5(target.read_bytes()).hexdigest()!=config['md5sum']:raise ValueError('Official OCR weight MD5 mismatch')
+        sources.append({'url':config['url'],'filename':target.name,'official_md5':config['md5sum'],'sha256':sha(target)})
+    (out/'models.json').write_text(json.dumps(sources,indent=2))
+    reader=easyocr.Reader(['en'],gpu=False,model_storage_directory=str(weights),user_network_directory=str(weights/'user-network'),download_enabled=False,verbose=False,quantize=False)
+    records=out/'records';records.mkdir()
+    with (out/'ocr-index.jsonl').open('x') as index:
+        for n,row in enumerate(rows):
+            started=time.perf_counter();items=reader.readtext(row['image_path'],detail=1,paragraph=False,canvas_size=1600,batch_size=1,workers=0)
+            record={'question_id':row['question_id'],'image_sha256':sha(row['image_path']),'seconds':time.perf_counter()-started,
+                'items':[{'box':[[float(x),float(y)] for x,y in box],'text':text,'confidence':float(confidence)} for box,text,confidence in items]}
+            path=records/(row['question_id']+'.json');path.write_text(json.dumps(record,indent=2))
+            index.write(json.dumps({'question_id':row['question_id'],'record':str(path.relative_to(out)),'sha256':sha(path),'items':len(items),'seconds':record['seconds']})+'\n');index.flush()
+            print('OCR_PROGRESS',n+1,'/',len(rows),'lines',len(items),flush=True)
+    print('OCR_PREPARED',flush=True)
