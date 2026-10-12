@@ -5,6 +5,7 @@ import torch
 from transformers import AutoModelForImageTextToText,AutoProcessor,CLIPVisionConfig,LlamaConfig,LlavaConfig,LlavaForConditionalGeneration
 
 def load_pretrained(model_id,revision,device,dtype=torch.bfloat16):
+    if torch.device(device).type=='cuda' and not torch.cuda.is_available():raise RuntimeError('CUDA unavailable; select the multimodal-gpu interpreter in VS Code')
     if len(revision)!=40 or any(c not in '0123456789abcdef' for c in revision.lower()):raise ValueError('Use an immutable 40-character model revision SHA')
     root=Path(__file__).resolve().parents[1];report=root/'reports/local-model.json';source=model_id;kwargs={'revision':revision}
     if report.exists():

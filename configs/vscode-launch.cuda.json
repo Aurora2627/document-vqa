@@ -1,0 +1,221 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "CUDA preflight",
+      "type": "debugpy",
+      "request": "launch",
+      "python": "${config:python.defaultInterpreterPath}",
+      "program": "${workspaceFolder}/scripts/check_cuda.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "subProcess": true,
+      "env": {
+        "PYTHONUTF8": "1",
+        "PYTHONNOUSERSITE": "1",
+        "HF_HUB_DISABLE_XET": "1"
+      },
+      "args": [
+        "--output",
+        "runs/${input:runName}"
+      ]
+    },
+    {
+      "name": "Project tests",
+      "type": "debugpy",
+      "request": "launch",
+      "python": "${config:python.defaultInterpreterPath}",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "env": {
+        "PYTHONUTF8": "1",
+        "PYTHONNOUSERSITE": "1"
+      },
+      "program": "${workspaceFolder}/scripts/run_checks.py"
+    },
+    {
+      "name": "Prepare synthetic software fixtures",
+      "type": "debugpy",
+      "request": "launch",
+      "python": "${config:python.defaultInterpreterPath}",
+      "program": "${workspaceFolder}/scripts/prepare_sample.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "subProcess": true,
+      "env": {
+        "PYTHONUTF8": "1",
+        "PYTHONNOUSERSITE": "1",
+        "HF_HUB_DISABLE_XET": "1"
+      },
+      "args": []
+    },
+    {
+      "name": "CUDA tiny architecture training",
+      "type": "debugpy",
+      "request": "launch",
+      "python": "${config:python.defaultInterpreterPath}",
+      "program": "${workspaceFolder}/scripts/smoke_architecture.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "subProcess": true,
+      "env": {
+        "PYTHONUTF8": "1",
+        "PYTHONNOUSERSITE": "1",
+        "HF_HUB_DISABLE_XET": "1"
+      },
+      "args": [
+        "--output",
+        "runs/${input:runName}"
+      ]
+    },
+    {
+      "name": "CUDA pretrained LoRA compatibility",
+      "type": "debugpy",
+      "request": "launch",
+      "python": "${config:python.defaultInterpreterPath}",
+      "program": "${workspaceFolder}/scripts/smoke_local_pretrained.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "subProcess": true,
+      "env": {
+        "PYTHONUTF8": "1",
+        "PYTHONNOUSERSITE": "1",
+        "HF_HUB_DISABLE_XET": "1"
+      },
+      "args": [
+        "--output",
+        "runs/${input:runName}"
+      ]
+    },
+    {
+      "name": "CUDA pretrained adapter reload",
+      "type": "debugpy",
+      "request": "launch",
+      "python": "${config:python.defaultInterpreterPath}",
+      "program": "${workspaceFolder}/scripts/verify_local_adapter.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "subProcess": true,
+      "env": {
+        "PYTHONUTF8": "1",
+        "PYTHONNOUSERSITE": "1",
+        "HF_HUB_DISABLE_XET": "1"
+      },
+      "args": [
+        "--run",
+        "${input:adapterRun}",
+        "--output",
+        "runs/${input:runName}"
+      ]
+    },
+    {
+      "name": "CUDA document QA demo",
+      "type": "debugpy",
+      "request": "launch",
+      "python": "${config:python.defaultInterpreterPath}",
+      "program": "${workspaceFolder}/scripts/demo.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "subProcess": true,
+      "env": {
+        "PYTHONUTF8": "1",
+        "PYTHONNOUSERSITE": "1",
+        "HF_HUB_DISABLE_XET": "1"
+      },
+      "args": [
+        "--device",
+        "cuda",
+        "--port",
+        "8765"
+      ]
+    },
+    {
+      "name": "CUDA fixture inference",
+      "type": "debugpy",
+      "request": "launch",
+      "python": "${config:python.defaultInterpreterPath}",
+      "program": "${workspaceFolder}/scripts/infer.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "subProcess": true,
+      "env": {
+        "PYTHONUTF8": "1",
+        "PYTHONNOUSERSITE": "1",
+        "HF_HUB_DISABLE_XET": "1"
+      },
+      "args": [
+        "--manifest",
+        "data/sample/fixtures.jsonl",
+        "--model",
+        "llava-hf/llava-onevision-qwen2-0.5b-ov-hf",
+        "--revision",
+        "74dd0bf867a4cda7950c17663794267c60cf4b40",
+        "--device",
+        "cuda",
+        "--max-image-edge",
+        "384",
+        "--output",
+        "runs/${input:runName}"
+      ]
+    },
+    {
+      "name": "CUDA fixture LoRA training",
+      "type": "debugpy",
+      "request": "launch",
+      "python": "${config:python.defaultInterpreterPath}",
+      "program": "${workspaceFolder}/scripts/train_lora.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "subProcess": true,
+      "env": {
+        "PYTHONUTF8": "1",
+        "PYTHONNOUSERSITE": "1",
+        "HF_HUB_DISABLE_XET": "1"
+      },
+      "args": [
+        "--train",
+        "data/sample/train.jsonl",
+        "--val",
+        "data/sample/val.jsonl",
+        "--epochs",
+        "1",
+        "--accumulation",
+        "1",
+        "--gradient-checkpointing",
+        "--model",
+        "llava-hf/llava-onevision-qwen2-0.5b-ov-hf",
+        "--revision",
+        "74dd0bf867a4cda7950c17663794267c60cf4b40",
+        "--device",
+        "cuda",
+        "--max-image-edge",
+        "384",
+        "--output",
+        "runs/${input:runName}"
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "id": "runName",
+      "type": "promptString",
+      "description": "New run folder; existing outputs are never overwritten",
+      "default": "cuda-check-01"
+    },
+    {
+      "id": "adapterRun",
+      "type": "promptString",
+      "description": "Existing CUDA pretrained compatibility run folder",
+      "default": "runs/cuda-pretrained-01"
+    }
+  ]
+}

@@ -14,7 +14,7 @@ from paired_statistics import paired_bootstrap
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--manifest',required=True);p.add_argument('--output',required=True);p.add_argument('--report',required=True)
-    p.add_argument('--adapter');p.add_argument('--device',default='mps',choices=['mps','cuda','cpu']);args=p.parse_args()
+    p.add_argument('--adapter');p.add_argument('--device',default='cuda',choices=['mps','cuda','cpu']);args=p.parse_args()
     rows=load_manifest(args.manifest)
     if len(rows)<2 or len({r['document_id'] for r in rows})!=len(rows):raise ValueError('Use at least two documents, one question each')
     if any(row['question'].strip()==rows[(n+1)%len(rows)]['question'].strip() for n,row in enumerate(rows)):

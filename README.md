@@ -1,5 +1,7 @@
 # LLaVA 参数高效微调与问题驱动文档阅读
 
+当前开发环境：Windows + CUDA，Mac 通过 VS Code Remote SSH 编辑。模型入口默认使用 NVIDIA GPU。启动步骤见 [VSCODE_START.md](VSCODE_START.md)，兼容性记录见 [本版检查](reports/v0.7.1/compatibility.json)。下文历史 MPS 指标仍描述原实验。
+
 状态：v0.7.0 完成扩展真实 LoRA 训练、新 64 文档保留评测、问题驱动九格选择和 OCR 图文消融。全部从 VS Code 使用系统 Python/PyTorch 运行，16 项检查通过。本轮未观察到扩展微调或区域/OCR 的稳定收益；保留完整负面结果。
 
 ## 最新结果

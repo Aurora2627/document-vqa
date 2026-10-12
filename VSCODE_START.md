@@ -1,112 +1,19 @@
-# VS Code 启动与调试
+# Windows CUDA / VS Code 使用说明
 
-打开 mm02-document-vqa 文件夹，Python 解释器选择 /usr/bin/python3。当前本机依赖仍在共享工作区 .system-python-packages，项目 .vscode 已配置 PYTHONPATH。该本机配置不上传 GitHub；其他设备根据实际依赖目录设置。后续云端使用 VS Code Remote SSH 与独立 Python 3.11 环境。
+Mac 连接 SSH 别名 hry26278，打开 Windows 的 D:/career-projects/multimodal.code-workspace。Mac 负责编辑，模型计算在 Windows 执行。
 
-## 本机已验证流程
+1. 在 VS Code 选择 Python 解释器 D:/career-projects/envs/multimodal-gpu/Scripts/python.exe。
+2. 运行和调试面板选择 CUDA preflight，F5，填写一个从未使用过的运行目录名。
+3. LLaVA 可选 CUDA pretrained LoRA compatibility、CUDA pretrained adapter reload、CUDA fixture LoRA training、CUDA fixture inference 或 CUDA document QA demo。软件测试图片只验证兼容性。
+4. Qwen 可选 CUDA pretrained inference smoke（一个已观察开发样本），或原有三类 CUDA study。完整研究需要对应处理后数据及本地权重。
+5. 每次实验使用新目录，源码、配置、输入哈希、环境、日志、预测与 .pt 权重均保留。不要覆盖历史 runs。
 
-所有命令在本项目 VS Code 集成终端运行。每次更换 runs 目录名，不能覆盖。
+本机 .vscode/launch.json 已配置。仓库提供 configs/vscode-launch.cuda.json 模板，重新克隆后复制到 .vscode/launch.json，并设置自己的解释器路径。调试模板通过 VS Code 的解释器设置选取环境，没有写入个人绝对路径。不要在外层 career-projects 普通文件夹模式下寻找子项目调试配置；应打开上述多根工作区或单独项目文件夹。
 
-```sh
-/usr/bin/python3 scripts/prepare_sample.py
-/usr/bin/python3 scripts/run_checks.py
-/usr/bin/python3 scripts/download_local_model.py
-/usr/bin/python3 scripts/infer.py --manifest data/sample/fixtures.jsonl --model llava-hf/llava-onevision-qwen2-0.5b-ov-hf --revision 74dd0bf867a4cda7950c17663794267c60cf4b40 --device mps --max-image-edge 384 --output runs/my-zero-shot
-/usr/bin/python3 scripts/train_lora.py --device mps --train data/sample/train.jsonl --val data/sample/val.jsonl --model llava-hf/llava-onevision-qwen2-0.5b-ov-hf --revision 74dd0bf867a4cda7950c17663794267c60cf4b40 --max-image-edge 384 --epochs 2 --accumulation 1 --output runs/my-lora
-/usr/bin/python3 scripts/infer.py --manifest data/sample/fixtures.jsonl --model llava-hf/llava-onevision-qwen2-0.5b-ov-hf --revision 74dd0bf867a4cda7950c17663794267c60cf4b40 --adapter runs/my-lora/adapter.pt --device mps --max-image-edge 384 --output runs/my-lora-predictions
-/usr/bin/python3 scripts/evaluate.py --predictions runs/my-zero-shot/predictions.jsonl --output runs/my-zero-shot/answer-metrics.json
-```
+CUDA 是默认设备，缺少 CUDA 会报错，避免意外占用 Mac。显式 --device mps/cpu 的兼容入口仍可使用；训练仅支持 CUDA/MPS。分词、图片读取、指标统计和温度标量校准不需要强制放入显卡。
 
-下载器获取当时官方 revision 并记录 SHA256；若未来官方 revision 不同，请使用 reports/local-model.json 中的真实 revision。配置网络代理使用自己的终端环境变量，不把本机地址写入公共源码。
+已实测 Python 3.9.18、torch 2.8.0+cu126、torchvision 0.23.0+cu126、transformers 4.57.6。已有隔离环境不需要重装。requirements-cuda.txt 是重建依赖配方；先在新环境中安装，不能替换原 Conda 环境。
 
-上面是合成 fixture 兼容性测试，不能用于简历效果数字。正式数据按 question_id、document_id、image（相对清单目录）、question、answers（多答案列表）、split（train/val/test）组织 JSONL。训练入口需要分开的 train/val 清单，同一文档不能跨划分。
+LLaVA 默认小模型为 OneVision 0.5B，训练入口在支持时使用 BF16，FP16 路径使用梯度缩放；兼容性 smoke 使用 FP16 基座。Qwen 2B 使用 FP16。8GB 显存下建议训练长边 384/512、梯度检查点与梯度累积；更大模型/分辨率需要另行实测。
 
-## 调试入口
-
-运行和调试中已有：01 代码与测试、02 微型结构 MPS 验证、03 生成测试文档、04 本机预训练零样本问答、05 本机 LoRA 流程。可在 lora.py 的 forward、batching.py 的 labels 和 train_lora.py 的 loss 下断点。
-
-云端 7B 实验需要固定模型 SHA、安装 requirements-cloud.txt 并使用匹配服务器的 PyTorch CUDA 轮子；当前尚未验证该路径。一次小 batch 测量显存后再定训练规模。
-
-## 真实开发数据实验（v0.3.0）
-
-本地已有 runs/docvqa-dev-v030/dev.jsonl；调试配置 06 可直接重跑 512 基线，每次填写新的实验目录名。建议在 infer.py 的 processor 输入、model.generate 和答案解码处下断点。公开仓库不包含数据，其他设备先下载。下载脚本使用终端中配置的 HTTPS_PROXY，不硬编码代理。
-
-```sh
-/usr/bin/python3 scripts/prepare_docvqa.py --count 20 --output runs/my-docvqa-data
-/usr/bin/python3 scripts/infer.py --manifest runs/my-docvqa-data/dev.jsonl --model llava-hf/llava-onevision-qwen2-0.5b-ov-hf --revision 74dd0bf867a4cda7950c17663794267c60cf4b40 --device mps --max-image-edge 384 --output runs/my-dev-384
-/usr/bin/python3 scripts/infer.py --manifest runs/my-docvqa-data/dev.jsonl --model llava-hf/llava-onevision-qwen2-0.5b-ov-hf --revision 74dd0bf867a4cda7950c17663794267c60cf4b40 --device mps --max-image-edge 512 --output runs/my-dev-512
-/usr/bin/python3 scripts/evaluate.py --predictions runs/my-dev-384/predictions.jsonl --output runs/my-dev-384/answer-metrics.json
-/usr/bin/python3 scripts/evaluate.py --predictions runs/my-dev-512/predictions.jsonl --compare-to runs/my-dev-384/predictions.jsonl --output runs/my-dev-512/answer-metrics.json
-```
-
-开发集来自 viewer 顺序页面，未锁定 viewer revision，保存的图片哈希及原始响应用于本轮审计。不是完整官方基准评测。
-
-## 真实数据 LoRA 对照（v0.4.0）
-
-本机已有 runs/docvqa-sft-data-v040c 中的 train/val/test 清单。这里的 test 是从带答案的官方 validation 镜像划出的本轮保留评测，不能称官方盲测。上轮 20 题开发集被排除。公开仓库不含数据，下载时配置自己的终端代理。
-
-```sh
-/usr/bin/python3 scripts/prepare_sft_data.py --exclude-manifest runs/docvqa-dev-v030/dev.jsonl --output runs/my-sft-data
-/usr/bin/python3 scripts/run_sft_experiment.py --data runs/my-sft-data --output runs/my-real-lora
-```
-
-参数协议保存在 configs/real-sft-v0.4.0.json。总入口依次启动检查、原模型验证/评测预测、LoRA 训练、选中 adapter 的新进程预测、严格配对评测；子进程同样使用当前系统 Python 和 PyTorch，在 VS Code 集成终端内运行。每阶段保存日志，每轮保存源码和输入快照，失败不会覆盖旧目录。
-
-调试入口 07 可单独运行真实 LoRA 训练。在 batching.py 的 labels、answer_loss 和 train_lora.py 的 backward、梯度裁剪及验证损失处下断点。每个 epoch 的 adapter 保存在 checkpoints，adapter.pt 指向验证答案 token NLL 最低的训练轮次；该选择依据不是评测集准确率。
-
-## 固定多视图开发实验（v0.5.0）
-
-```sh
-/usr/bin/python3 scripts/run_view_experiment.py --manifest runs/docvqa-dev-v030/dev.jsonl --output runs/my-document-views
-```
-
-比较整页单图、三张重复整页、整页加上下半页。后两组使用同样的三图提示，嵌套 images=[[image1,image2,image3]] 进入 OneVision 官方多图处理路径。单图 anyres 路径与多图路径处理不同，故重复整页组是必要对照。没有使用答案或真实区域标注选择裁剪位置。实验只针对已有开发集，不能报告成独立测试收益。
-
-调试入口 08 可查看固定裁剪和多图 token 组织。建议在 views.py 的 prepare_views、infer.py 的 processor 和生成处设置断点。每次使用新的实验目录名。
-
-## 本地问答页面
-
-调试面板选择「09 本地文档问答演示（MPS）」并启动。也可在 VS Code 集成终端执行：
-
-```sh
-PYTHONPATH=/Users/meiying/Documents/Codex/2026-10-07/zhe/.system-python-packages /usr/bin/python3 scripts/demo.py --device mps --port 8765
-```
-
-出现 `DEMO_READY` 后打开 http://127.0.0.1:8765 。上传 PNG/JPEG/WebP（不超过 5 MB、2000 万像素），输入问题，选择 512 或 768。使用固定官方基座、贪心生成，不加载 LoRA；页面不提供 OCR 或证据定位。当前主要验证英文单页文档。每次请求保存原图、问题、结果、源码和配置至 `runs/demo-requests/`，仅保留本机，不上传 GitHub。停止调试或在终端按 Ctrl+C 关闭服务。
-
-为了适配 16GB 内存，一次只启动一个模型进程；先结束训练/批量评测，再启动页面。
-
-## 四组独立评测复现
-
-以下目录仅在本机存在。改成新的 output/report 名称，禁止覆盖历史结果。
-
-```sh
-PYTHONPATH=/Users/meiying/Documents/Codex/2026-10-07/zhe/.system-python-packages /usr/bin/python3 scripts/run_independent_eval.py --manifest runs/independent-data-v060/test.jsonl --adapter runs/real-docvqa-lora-v040b/training/adapter.pt --output runs/independent-eval-new --report reports/independent-eval-new.json
-```
-
-比较原模型/已有 LoRA × 512/768，包含配对文档 bootstrap 和逐题失败清单。本轮文档已经被查看，后续调参应另设新的未查看评测集。下载脚本 `prepare_independent_eval.py` 使用固定候选池，排除先前所有真实数据；代理按本机网络配置设置，不写入公共仓库。
-
-## 扩展微调与问题驱动阅读（v0.7.0）
-
-仍在 VS Code 集成终端运行。先确认终端继承本机 `PYTHONPATH`；没有继承时，在命令前加上上面的共享依赖路径。所有 output 和 report 都换新名字。以下数据和 adapter 路径是本机真实实验记录，公开仓库不附带这些文件。
-
-```sh
-/usr/bin/python3 scripts/prepare_expanded_sft.py --previous-train runs/docvqa-sft-data-v040c/train.jsonl --exclude runs/docvqa-dev-v030/dev.jsonl runs/docvqa-sft-data-v040c/val.jsonl runs/docvqa-sft-data-v040c/test.jsonl runs/independent-data-v060/test.jsonl --output runs/my-expanded-data
-/usr/bin/python3 scripts/run_expanded_study.py --data runs/expanded-data-v070 --previous-adapter runs/real-docvqa-lora-v040b/training/adapter.pt --development runs/docvqa-dev-v030/dev.jsonl --output runs/my-expanded-study --report reports/my-expanded-sft.json --region-report reports/my-trained-regions.json
-/usr/bin/python3 scripts/run_region_experiment.py --manifest runs/docvqa-dev-v030/dev.jsonl --output runs/my-base-regions --report reports/my-base-regions.json
-```
-
-训练协议 `configs/expanded-sft-v0.7.0.json`：两轮、rank 8、alpha 16、学习率 1e-4、梯度累积 4、512 输入，冻结视觉编码器和 projector。可以在 `src/region_reading.py` 的九个数字 logits、`prepare_region_views` 的原图坐标、`read_views` 的多图输入处下断点。区域排序是未经区域监督的模型提示基线，不把它称作已训练的定位模型。
-
-OCR 使用单独的本机缓存依赖目录，避免修改共享 PyTorch 环境。首次安装和提取也在 VS Code 中执行：
-
-```sh
-/usr/bin/python3 scripts/install_ocr_support.py --output runs/my-ocr-install
-/usr/bin/python3 scripts/prepare_ocr.py --manifest runs/docvqa-dev-v030/dev.jsonl --output runs/my-ocr-cache
-/usr/bin/python3 scripts/run_ocr_study.py --manifest runs/docvqa-dev-v030/dev.jsonl --ocr runs/ocr-dev-v070 --adapter runs/expanded-study-v070/sft/training/adapter.pt --output runs/my-ocr-study --report reports/my-ocr-study.json
-```
-
-安装器使用 `requirements-ocr.txt` 的固定版本和系统 Python，将轮子安装到忽略的 `data/cache/ocr-python`。提取器通过官方发布地址下载 CRAFT/英文识别权重，验证上游 MD5 并记录 SHA256；CPU PyTorch OCR 不使用量化。图片哈希必须与缓存匹配。此路径只验证了本机英文数据。
-
-`src/ocr_regions.py` 的 BM25 只接收问题、OCR 与图片大小。候选横带从原图裁剪，文字上下文上限和回退原因都保存。`question-only` / `ocr-only` 不输入图像；错配问题检索组仍回答原问题。检查单题图像 token、文字 token 和 `retrieved-regions.jsonl`，不要只看最终总分。
-
-运行和调试已增加 10 扩展训练、11 区域选择、12 OCR 提取、13 OCR 消融。一个 MPS 模型任务结束后再运行下一个；OCR 消融的 `--wait-for-study` 可等待训练研究全部结束才加载模型。本地演示页面目前仍只展示原模型整页阅读，研究方法以保存的实验入口为准。
+历史数据集、旧 adapter 与本轮环境不随 GitHub 下载。旧 MPS 指标不改写成 CUDA 结果；迁移可运行代码与完整复跑历史实验是不同工作。历史协议仍保存原设备，新入口在运行配置中记录实际 CUDA 覆盖。

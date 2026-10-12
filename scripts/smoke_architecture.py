@@ -7,7 +7,7 @@ from modeling import tiny_llava,tiny_batch
 from lora import configure_lora,adapter_state,restore_adapter
 from run_record import snapshot_run
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--device',choices=['cpu','mps','cuda'],default='mps');p.add_argument('--output',required=True);args=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--device',choices=['cpu','mps','cuda'],default='cuda');p.add_argument('--output',required=True);args=p.parse_args()
     config={**vars(args),'scope':'random tiny HF LLaVA architecture only; synthetic tensor batch; no document QA accuracy','seed':42,'framework':'PyTorch','launch':'VS Code'}
     out=snapshot_run(args.output,config);torch.manual_seed(42)
     model=tiny_llava().to(args.device);base={k:v.detach().cpu().clone() for k,v in model.state_dict().items()}

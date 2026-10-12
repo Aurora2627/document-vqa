@@ -8,8 +8,8 @@ from run_record import snapshot_run,sha
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--data',required=True);p.add_argument('--output',required=True)
-    p.add_argument('--protocol',default='configs/real-sft-v0.4.0.json');args=p.parse_args()
-    data=Path(args.data).resolve();cfg=json.loads(Path(args.protocol).read_text())
+    p.add_argument('--protocol',default='configs/real-sft-cuda.json');p.add_argument('--device',choices=['cuda','mps'],default='cuda');args=p.parse_args()
+    data=Path(args.data).resolve();cfg=json.loads(Path(args.protocol).read_text());cfg['device']=args.device
     manifests=[data/(role+'.jsonl') for role in ['train','val','test']]
     check_document_splits(*(load_manifest(path) for path in manifests))
     out=snapshot_run(args.output,{**vars(args),'protocol':cfg,'protocol_sha256':sha(args.protocol)},manifests).resolve()

@@ -5,9 +5,9 @@ ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT/'src'))
 from run_record import snapshot_run
 from evaluation import compare
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--manifest',required=True);p.add_argument('--output',required=True);args=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--manifest',required=True);p.add_argument('--output',required=True);p.add_argument('--device',choices=['cuda','mps','cpu'],default='cuda');args=p.parse_args()
     protocol={'model':'llava-hf/llava-onevision-qwen2-0.5b-ov-hf','revision':'74dd0bf867a4cda7950c17663794267c60cf4b40',
-        'max_image_edge':512,'device':'mps','adapter':None,'modes':['whole','repeat3','whole-split'],
+        'max_image_edge':512,'device':args.device,'adapter':None,'modes':['whole','repeat3','whole-split'],
         'selection':'fixed page halves, no question/answer-dependent crop selection',
         'control':'repeat3 and whole-split use exactly the same three-image prompt and processor path',
         'scope':'previously inspected 20-question development slice; no held-out performance claim'}
@@ -24,7 +24,7 @@ if __name__=='__main__':
     run('checks','run_checks.py',[]);summaries={};predictions={}
     for mode in protocol['modes']:
         target=out/mode
-        run(mode,'infer.py',['--manifest',Path(args.manifest).resolve(),'--model',protocol['model'],'--revision',protocol['revision'],'--device','mps','--max-image-edge',512,'--view',mode,'--output',target])
+        run(mode,'infer.py',['--manifest',Path(args.manifest).resolve(),'--model',protocol['model'],'--revision',protocol['revision'],'--device',args.device,'--max-image-edge',512,'--view',mode,'--output',target])
         run('score-'+mode,'evaluate.py',['--predictions',target/'predictions.jsonl','--output',target/'answer-metrics.json'])
         summaries[mode]=json.loads((target/'answer-metrics.json').read_text())
         predictions[mode]=[json.loads(line) for line in (target/'predictions.jsonl').read_text().splitlines()]

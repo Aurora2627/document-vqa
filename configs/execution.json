@@ -1,12 +1,17 @@
 {
   "project": "mm02-document-vqa",
-  "status": "implemented-local-fixture-validated-real-docvqa-pending",
+  "status": "cuda-compatibility-validated; historical-results-preserved",
   "seed": 42,
-  "local_device": "mps",
+  "local_device": "cuda",
   "model_backend": "pytorch-transformers-llava-onevision",
   "remote_training": "optional-7b-cloud-expansion-not-started",
   "data_root": "data",
   "run_root": "runs",
   "local_model": "llava-hf/llava-onevision-qwen2-0.5b-ov-hf",
-  "revision": "74dd0bf867a4cda7950c17663794267c60cf4b40"
+  "revision": "74dd0bf867a4cda7950c17663794267c60cf4b40",
+  "version": "0.7.1",
+  "default_device": "cuda",
+  "launch": "VS Code Remote SSH terminal/debugger",
+  "cuda_compatibility": "passed: RTX 4060 Laptop 8GB",
+  "compatibility_tests": 16
 }

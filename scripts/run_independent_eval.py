@@ -10,11 +10,11 @@ from metrics import score_answer
 
 def main():
     p=argparse.ArgumentParser(); p.add_argument('--manifest',required=True); p.add_argument('--output',required=True)
-    p.add_argument('--report',required=True); p.add_argument('--adapter'); args=p.parse_args()
+    p.add_argument('--report',required=True); p.add_argument('--adapter'); p.add_argument('--device',choices=['cuda','mps','cpu'],default='cuda');args=p.parse_args()
     protocol={'model':'llava-hf/llava-onevision-qwen2-0.5b-ov-hf', 'revision':'74dd0bf867a4cda7950c17663794267c60cf4b40',
         'edges':[512,768], 'view':'whole', 'adapter_sha256':sha(args.adapter) if args.adapter else None,
         'adapter_selection':'existing v0.4 epoch-2 checkpoint, selected using previous validation NLL; no new training',
-        'device':'mps', 'generation':'greedy max_new_tokens=64',
+        'device':args.device, 'generation':'greedy max_new_tokens=64',
         'scope':'new document-disjoint labeled validation subset; no official benchmark claim',
         'primary_comparison':'base-768 versus base-512; other paired contrasts exploratory'}
     inputs=[args.manifest]+([args.adapter] if args.adapter else [])
@@ -34,7 +34,7 @@ def main():
         for edge in protocol['edges']:
             name=kind+'-'+str(edge); target=out/name
             arguments=['--manifest',Path(args.manifest).resolve(),'--split','test','--model',protocol['model'],
-                '--revision',protocol['revision'],'--device','mps','--max-image-edge',edge,'--output',target]
+                '--revision',protocol['revision'],'--device',args.device,'--max-image-edge',edge,'--output',target]
             if kind=='adapter': arguments+=['--adapter',Path(args.adapter).resolve()]
             run(name,'infer.py',arguments)
             predictions[name]=[json.loads(line) for line in (target/'predictions.jsonl').read_text().splitlines()]

@@ -15,9 +15,9 @@ from paired_statistics import paired_bootstrap
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--manifest',required=True);p.add_argument('--ocr',required=True);p.add_argument('--output',required=True)
-    p.add_argument('--report',required=True);p.add_argument('--adapter');p.add_argument('--wait-for-study');args=p.parse_args()
+    p.add_argument('--report',required=True);p.add_argument('--adapter');p.add_argument('--wait-for-study');p.add_argument('--device',choices=['cuda','mps','cpu'],default='cuda');args=p.parse_args()
     if args.wait_for_study:
-        deadline=time.monotonic()+7200;path=Path(args.wait_for_study)/'commands.json';print('WAITING_FOR_MPS_STUDY',flush=True)
+        deadline=time.monotonic()+7200;path=Path(args.wait_for_study)/'commands.json';print('WAITING_FOR_PRIOR_STUDY',flush=True)
         while True:
             commands=json.loads(path.read_text()) if path.exists() else []
             if any(r.get('exit_code',0)!=0 for r in commands):raise RuntimeError('Prior study failed; do not continue silently')
@@ -32,7 +32,7 @@ def main():
         if json.loads(records[row['question_id']].read_text())['image_sha256']!=sha(row['image_path']):raise ValueError('OCR/document mismatch')
     modes=['whole','question-only','ocr-only','ocr-crop','whole-ocr','shuffled-ocr']
     protocol={'model':'llava-hf/llava-onevision-qwen2-0.5b-ov-hf','revision':'74dd0bf867a4cda7950c17663794267c60cf4b40',
-        'reader_edge':768,'ocr':'EasyOCR 1.7.2 PyTorch CPU, CRAFT + english_g2, canvas=1600, no quantization',
+        'device':args.device,'reader_edge':768,'ocr':json.loads((ocr/'config.json').read_text()),
         'retrieval':'PyTorch BM25 over line plus neighbours, full-width bands +/-18% page height, top 2; nearest 8 lines per band, coordinates in percent',
         'context_limit':'128 tokens per retrieved band, at most two bands; explicit truncation recorded',
         'adapter_sha256':sha(args.adapter) if args.adapter else None,'modes':modes,
@@ -40,7 +40,7 @@ def main():
         'evidence_status':'unverified OCR candidates; no reference answer or true box used in selection'}
     inputs=[args.manifest,ocr/'ocr-index.jsonl',ocr/'models.json']+list(records.values())+([args.adapter] if args.adapter else [])
     out=snapshot_run(args.output,{**vars(args),**protocol},inputs)
-    model,processor=load_pretrained(protocol['model'],protocol['revision'],'mps',torch.float16)
+    model,processor=load_pretrained(protocol['model'],protocol['revision'],args.device,torch.float16)
     if args.adapter:
         checkpoint=torch.load(args.adapter,map_location='cpu',weights_only=True)
         if checkpoint['model_id']!=protocol['model'] or checkpoint['revision']!=protocol['revision']:raise ValueError('Adapter mismatch')
@@ -70,7 +70,7 @@ def main():
                     'whole-ocr':([whole],context_question(row['question'],guided_context),True),
                     'shuffled-ocr':([whole],context_question(row['question'],shuffled_context),True)}
                 for mode,(views,question,uses_ocr) in specifications.items():
-                    prediction=read_views(model,processor,views,question,'mps',torch.float16)
+                    prediction=read_views(model,processor,views,question,args.device,torch.float16)
                     prediction.update(question_id=row['question_id'],document_id=row['document_id'],answers=row['answers'],question_types=row.get('question_types',[]),
                         ocr_seconds=record['seconds'] if uses_ocr else 0.,
                         retrieval_seconds=(shuffled_seconds if mode=='shuffled-ocr' else retrieval_seconds) if uses_ocr else 0.)

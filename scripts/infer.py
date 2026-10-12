@@ -11,7 +11,7 @@ from lora import configure_lora,restore_adapter
 from data import load_manifest,check_document_splits
 from run_record import snapshot_run,sha
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--manifest',required=True);p.add_argument('--model',default='llava-hf/llava-v1.6-mistral-7b-hf');p.add_argument('--revision',required=True);p.add_argument('--device',choices=['cuda','cpu','mps'],default='cuda');p.add_argument('--split',choices=['train','val','test'],default='val');p.add_argument('--adapter');p.add_argument('--view',choices=['whole','top','bottom','repeat3','whole-split'],default='whole');p.add_argument('--max-image-edge',type=int,default=0);p.add_argument('--output',required=True);args=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--manifest',required=True);p.add_argument('--model',default='llava-hf/llava-onevision-qwen2-0.5b-ov-hf');p.add_argument('--revision',required=True);p.add_argument('--device',choices=['cuda','cpu','mps'],default='cuda');p.add_argument('--split',choices=['train','val','test'],default='val');p.add_argument('--adapter');p.add_argument('--view',choices=['whole','top','bottom','repeat3','whole-split'],default='whole');p.add_argument('--max-image-edge',type=int,default=0);p.add_argument('--output',required=True);args=p.parse_args()
     rows=load_manifest(args.manifest);check_document_splits(rows);rows=[r for r in rows if r['split']==args.split]
     if not rows:raise ValueError('No selected examples')
     config={**vars(args),'framework':'PyTorch','launch':'VS Code','decoding':'greedy, max_new_tokens=64','evidence':'no localization claim; fixed crops ignore ground-truth answers/regions','image_sha256':{r['question_id']:sha(r['image_path']) for r in rows}}
