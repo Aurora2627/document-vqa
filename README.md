@@ -1,5 +1,9 @@
 # LLaVA 参数高效微调与问题驱动文档阅读
 
+当前维护与求职展示以 main 分支的 Windows / NVIDIA CUDA 版本为准。后续编写、调试、测试与实验均通过 VS Code Remote SSH 在 Windows 完成；Mac 仅作为远程连接终端。旧提交、旧标签和已完成实验保留真实历史，不代表当前默认运行方式。
+
+当前运行入口与验证范围见 [CURRENT_STATUS.md](CURRENT_STATUS.md)。
+
 当前开发环境：Windows + CUDA，Mac 通过 VS Code Remote SSH 编辑。模型入口默认使用 NVIDIA GPU。启动步骤见 [VSCODE_START.md](VSCODE_START.md)，兼容性记录见 [本版检查](reports/v0.7.1/compatibility.json)。下文历史 MPS 指标仍描述原实验。
 
 状态：v0.7.0 完成扩展真实 LoRA 训练、新 64 文档保留评测、问题驱动九格选择和 OCR 图文消融。全部从 VS Code 使用系统 Python/PyTorch 运行，16 项检查通过。本轮未观察到扩展微调或区域/OCR 的稳定收益；保留完整负面结果。
@@ -46,7 +50,7 @@
 ## 模型与设备
 
 - 本机起点：官方 `llava-hf/llava-onevision-qwen2-0.5b-ov-hf`，revision `74dd0bf867a4cda7950c17663794267c60cf4b40`，权重 1,787,445,680 字节，下载后与官方 LFS SHA256 校验一致。0.5B 是语言基座规模，视觉编码器也占参数和内存。
-- 全部运行使用 `/usr/bin/python3`、Python 3.9、PyTorch 2.8、Transformers 4.57.6，从 VS Code 启动。MPS 上基座 Float16、LoRA Float32。
+- 早期历史实验使用 `/usr/bin/python3`、Python 3.9、PyTorch 2.8、Transformers 4.57.6，从 VS Code 启动。MPS 上基座 Float16、LoRA Float32。
 - LLaVA-NeXT 7B 的代码接口已准备，真实推理/云端微调尚未验证；需要时再使用云端 GPU。不是所有 LLaVA 规模都能在 16GB Mac 上运行。
 
 ## 已验证的内容
@@ -73,7 +77,7 @@
 - `src/lora.py`：直接使用 PyTorch 实现 LoRA；语言模型 q/v 线性层的低秩增量，默认冻结视觉与 projector。
 - `src/batching.py`：官方生成前缀＋答案＋EOS，仅监督答案 token，拒绝不匹配或静默截断。只生成答案位置需要的 vocabulary logits，减少无效内存。
 - `scripts/infer.py`：零样本/adapter 推理，整页或固定裁剪，记录耗时和 token 数。
-- `scripts/train_lora.py`：MPS/CUDA LoRA 训练、梯度累积、验证 NLL 选模型。CUDA 路径尚未实际运行。
+- `scripts/train_lora.py`：CUDA 默认 LoRA 训练、梯度累积、验证 NLL 选模型；预训练单步、正式 fixture 训练和新进程重载已在 Windows CUDA 验证，完整历史基准尚未重跑。
 - `scripts/prepare_docvqa.py`：真实开发数据下载、源文档去重、版本观察及图片哈希。
 - `scripts/evaluate.py` / `src/evaluation.py`：ANLS 风格分数、规范化 Exact Match、题型分析及严格逐题对照；官方 evaluator 一致性尚未验证。
 - `scripts/prepare_independent_eval.py` / `scripts/run_independent_eval.py`：锁定新文档与四组对照；`src/paired_statistics.py` 使用 PyTorch 做配对文档 bootstrap。

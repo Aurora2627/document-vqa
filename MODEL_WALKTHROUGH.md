@@ -32,7 +32,7 @@ src/modeling.py 的 tiny_llava 创建真实 Transformers LlavaForConditionalGene
 
 LoRA 的基础线性层保持冻结，更新低秩 A/B。B 初始为零，所以插入 adapter 时模型输出与原模型等价。真实模型本轮有 540,672 个可训练参数：语言模型有 24 层、隐藏维度 896、14 个 attention heads、2 个 key/value heads，所以 q_proj 输出 896 维，v_proj 输出 128 维；rank=8 的 q/v LoRA 参数总数是 `24 × 8 × [(896+896)+(896+128)]`。这也体现了 grouped-query attention 的 q 与 v 输出维度不同。每轮 adapter 单独保存；`adapter.pt` 是训练轮次中验证 NLL 最低的版本。即使某轮训练 loss 下降，也不能直接宣称生成准确率提高，要用独立生成和逐题配对检查。
 
-512 输入的首次训练触发 MPS 内存上限。冻结基础权重并不意味着中间计算都无需保存：LoRA 的梯度仍依赖长序列中的激活。`--gradient-checkpointing` 通过重新计算中间激活减少保存量，代价是更多计算。采用 `use_reentrant=False`，让冻结输入嵌入的 LoRA 训练仍能计算梯度；测试会比较开启前后的损失和梯度。没有通过取消 MPS 内存上限来运行。
+历史 MPS 实验中，512 输入的首次训练触发内存上限。冻结基础权重并不意味着中间计算都无需保存：LoRA 的梯度仍依赖长序列中的激活。`--gradient-checkpointing` 通过重新计算中间激活减少保存量，代价是更多计算。采用 `use_reentrant=False`，让冻结输入嵌入的 LoRA 训练仍能计算梯度；测试会比较开启前后的损失和梯度。没有通过取消 MPS 内存上限来运行。
 
 最后读 `scripts/run_sft_experiment.py`：原模型生成、LoRA 训练、重新加载 adapter 生成、评测在独立子进程中依次执行。验证集负责选训练轮次，保留评测负责测本轮泛化。这里的 test 清单来自带答案的官方 validation 镜像，不能称官方盲测；看过结果后，后续调参应视其为开发数据。
 
