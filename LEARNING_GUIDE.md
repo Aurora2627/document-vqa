@@ -24,7 +24,7 @@
 
 阅读 `scripts/train_lora.py` 的梯度检查点、梯度累积、有限值检查和裁剪。追踪最后不足四条样本的累积窗口。非重入检查点通过重算激活降低内存；训练时关闭 cache。基座半精度、低秩参数单精度，全部仍是 PyTorch。
 
-能够回答：冻结参数为何仍有激活内存？gradient checkpointing 与 gradient accumulation 的作用有什么区别？MPS 与 CUDA 的实际验证边界在哪里？当前 CUDA 训练与重载已通过软件兼容性检查；早期完整基准仍属于原 MPS 实验。
+能够回答：冻结参数为何仍有激活内存？gradient checkpointing 与 gradient accumulation 的作用有什么区别？如何区分流程兼容性检查与完整任务基准？当前 CUDA 训练与重载已通过兼容性检查，历史真实数据基准的设备与精度以各版报告为准。
 
 ## 5. 如何证明效果
 

@@ -45,9 +45,9 @@ LLaVA-1.5 可用于原理复现与分辨率对照；LLaVA-NeXT 的高分辨率�
 - SFT 前后使用相同模型、生成参数和评测集；同时检查领域外能力是否退化。
 - 源码、配置、输入哈希、日志、权重和预测按每轮独立保存。模型实现与运行坚持 Python/PyTorch，全部从 VS Code 启动。
 
-## Mac 与外部 GPU
+## 计算资源
 
-当前使用 Windows RTX 4060 Laptop 8GB 和隔离的 PyTorch CUDA 环境，Mac 通过 Remote SSH 连接。已验证 OneVision 0.5B 训练与推理流程；更大模型仍需单独评估显存。
+当前使用 Windows RTX 4060 Laptop 8GB 和隔离的 PyTorch CUDA 环境。已验证 OneVision 0.5B 训练与推理流程；更大模型仍需单独评估显存。
 
 7B 语言模型仅 FP16 权重约 14GB（参数量×2 字节的粗略估算），还需视觉编码器、KV cache、临时张量与系统内存，故不把本机完整半精度推理或训练作为默认方案。用户尚未租用云端服务器。本机已验证 OneVision 小模型的实际推理和 LoRA 流程。正式 7B 推理及 LoRA 默认使用云端 NVIDIA GPU；显存需求由模型、分辨率、序列长度、batch、精度和优化设置实测。
 

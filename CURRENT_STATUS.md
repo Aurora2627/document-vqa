@@ -1,12 +1,9 @@
-# 当前项目入口
+# 当前项目状态
 
-当前维护与求职展示以 main 分支的 Windows / NVIDIA CUDA 版本为准。后续编写、调试、测试与实验均通过 VS Code Remote SSH 在 Windows 完成；Mac 仅作为远程连接终端。旧提交、旧标签和已完成实验保留真实历史，不代表当前默认运行方式。
+当前版本 v0.7.3。技术栈为 Python/PyTorch/Transformers，模型默认 NVIDIA CUDA；VS Code 启动步骤见 [VSCODE_START.md](VSCODE_START.md)。
 
-- 推荐入口：main；当前版本 v0.7.2。
-- 技术栈：Python、PyTorch 2.8.0+cu126、Transformers 4.57.6；Windows RTX 4060 Laptop 8GB。
-- 启动：按 VSCODE_START.md 配置隔离解释器，使用 configs/vscode-launch.cuda.json 调试模板。
-- 历史版本仍可从 Git 查看，用于展示迭代过程；请勿照搬旧 MPS 命令作为当前启动方式。
+已完成 OneVision 答案监督 LoRA、文档隔离评测、分辨率/区域/OCR 消融及文档问答演示。效果与限制见 [README](README.md)。
 
-已在 CUDA 验证预训练 LoRA 更新、正式 fixture 训练入口、adapter 推理、新进程重载、OCR 与 16 项测试。该验证确认流程可运行，未完整重跑早期真实数据基准，也不产生新的算法效果结论。
+Windows RTX 4060 Laptop 8GB 上已验证预训练 LoRA 更新、fixture 训练、adapter 推理、新进程重载、OCR 与 16 项测试。该检查确认流程兼容性，未完整重跑早期真实数据基准，不产生新的算法效果结论。历史实验设备按原报告记录。
 
-早期真实数据研究与局限见 README 和 reports；兼容性证据见 [CUDA 检查](reports/v0.7.1/compatibility.json)。
+[CUDA 检查证据](reports/v0.7.1/compatibility.json) · [扩展研究](reports/deepening-v0.7.0.md)
